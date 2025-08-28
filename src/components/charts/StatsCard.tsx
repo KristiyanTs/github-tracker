@@ -37,6 +37,17 @@ function StatItem({ title, value, subtitle, icon }: StatItemProps) {
 }
 
 export default function StatsCard({ stats, className = '' }: StatsCardProps) {
+  // Validate stats data
+  if (!stats) {
+    return (
+      <div className={`stats-card ${className}`}>
+        <div className="text-center py-8">
+          <p className="text-gray-500">No statistics data available</p>
+        </div>
+      </div>
+    );
+  }
+  
   const formatStreak = (days: number) => {
     if (days === 0) return '0 days';
     if (days === 1) return '1 day';
@@ -44,6 +55,7 @@ export default function StatsCard({ stats, className = '' }: StatsCardProps) {
   };
 
   const formatAverage = (avg: number) => {
+    if (isNaN(avg) || !isFinite(avg)) return '0.0';
     return avg < 1 ? avg.toFixed(2) : avg.toFixed(1);
   };
 
@@ -72,57 +84,67 @@ export default function StatsCard({ stats, className = '' }: StatsCardProps) {
     </svg>
   );
 
+  // Validate and sanitize stats values
+  const safeStats = {
+    currentStreak: Math.max(0, Math.min(stats.currentStreak || 0, 1000)),
+    longestStreak: Math.max(0, Math.min(stats.longestStreak || 0, 1000)),
+    totalContributions: Math.max(0, Math.min(stats.totalContributions || 0, 100000)),
+    averagePerDay: Math.max(0, Math.min(stats.averagePerDay || 0, 1000)),
+    mostActiveDay: stats.mostActiveDay || 'Unknown',
+    mostActiveMonth: stats.mostActiveMonth || 'Unknown'
+  };
+  
   // Calculate additional insights
-  const consistencyScore = stats.averagePerDay > 1 ? 'High' : stats.averagePerDay > 0.5 ? 'Medium' : 'Building';
-  const activityLevel = stats.totalContributions > 1000 ? 'Very Active' : 
-                       stats.totalContributions > 500 ? 'Active' : 
-                       stats.totalContributions > 100 ? 'Regular' : 'Getting Started';
-  const streakEfficiency = stats.currentStreak > 0 ? 
-    Math.round((stats.currentStreak / stats.longestStreak) * 100) : 0;
-  const weeklyAverage = (stats.averagePerDay * 7).toFixed(1);
-  const monthlyAverage = (stats.averagePerDay * 30).toFixed(1);
+  const consistencyScore = safeStats.averagePerDay > 1 ? 'High' : safeStats.averagePerDay > 0.5 ? 'Medium' : 'Building';
+  const activityLevel = safeStats.totalContributions > 1000 ? 'Very Active' : 
+                       safeStats.totalContributions > 500 ? 'Active' : 
+                       safeStats.totalContributions > 100 ? 'Regular' : 'Getting Started';
+  const streakEfficiency = safeStats.currentStreak > 0 && safeStats.longestStreak > 0 ? 
+    Math.round((safeStats.currentStreak / safeStats.longestStreak) * 100) : 0;
+  const weeklyAverage = (safeStats.averagePerDay * 7).toFixed(1);
+  const monthlyAverage = (safeStats.averagePerDay * 30).toFixed(1);
 
   return (
     <div className={`stats-card ${className}`}>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <StatItem
           title="Current Streak"
-          value={formatStreak(stats.currentStreak)}
+          value={formatStreak(safeStats.currentStreak)}
           subtitle="Keep the momentum going!"
           icon={<FireIcon />}
         />
         
         <StatItem
           title="Longest Streak"
-          value={formatStreak(stats.longestStreak)}
+          value={formatStreak(safeStats.longestStreak)}
           subtitle="Your personal record"
           icon={<TrendingIcon />}
         />
         
         <StatItem
           title="Total Contributions"
-          value={stats.totalContributions.toLocaleString()}
+          value={safeStats.totalContributions.toLocaleString()}
           subtitle="In the last year"
           icon={<ChartIcon />}
         />
         
         <StatItem
           title="Daily Average"
-          value={formatAverage(stats.averagePerDay)}
+          value={formatAverage(safeStats.averagePerDay)}
           subtitle="Contributions per day"
           icon={<CalendarIcon />}
         />
         
         <StatItem
           title="Most Active Day"
-          value={stats.mostActiveDay}
+          value={safeStats.mostActiveDay}
           subtitle="When you code the most"
           icon={<CalendarIcon />}
         />
         
         <StatItem
           title="Peak Month"
-          value={stats.mostActiveMonth}
+          value={safeStats.mostActiveMonth}
           subtitle="Your most productive month"
           icon={<CalendarIcon />}
         />
@@ -160,9 +182,9 @@ export default function StatsCard({ stats, className = '' }: StatsCardProps) {
           <div className="flex justify-between items-center py-2 border-b border-gray-700">
             <span className="text-gray-400">Goal Status:</span>
             <span className="text-red-400 font-medium">
-              {stats.totalContributions >= 365 ? '365+ Days!' : 
-               stats.totalContributions >= 100 ? '100+ Club!' : 
-               stats.totalContributions >= 50 ? '50+ Milestone!' : 
+              {safeStats.totalContributions >= 365 ? '365+ Days!' : 
+               safeStats.totalContributions >= 100 ? '100+ Club!' : 
+               safeStats.totalContributions >= 50 ? '50+ Milestone!' : 
                'Getting Started!'}
             </span>
           </div>

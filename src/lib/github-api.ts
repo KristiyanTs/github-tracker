@@ -118,6 +118,24 @@ export async function fetchContributions(username: string, year?: number): Promi
   
   try {
     const contributions = await fetchRealContributions(username, year);
+    
+      // Validate the contributions data
+  if (!contributions.weeks || contributions.weeks.length === 0) {
+    throw new Error('No contribution data received from GitHub API');
+  }
+  
+  // Validate date ranges are reasonable
+  const allDays = contributions.weeks.flatMap(week => week.contributionDays);
+  if (allDays.length > 0) {
+    const dates = allDays.map(day => new Date(day.date).getTime()).sort();
+    const dateRange = dates[dates.length - 1] - dates[0];
+    const maxReasonableRange = 365 * 24 * 60 * 60 * 1000; // 1 year in milliseconds
+    
+    if (dateRange > maxReasonableRange) {
+      console.warn('Warning: Contribution data spans more than 1 year');
+    }
+  }
+    
     return {
       user,
       ...contributions
@@ -127,7 +145,7 @@ export async function fetchContributions(username: string, year?: number): Promi
     
     // Following user preference: don't use fake data, show that data is unavailable
     throw new GitHubAPIError(
-      'GitHub contribution data is currently unavailable. This may be due to API limitations or missing authentication.',
+      `GitHub contribution data is currently unavailable: ${error instanceof Error ? error.message : 'Unknown error'}`,
       503
     );
   }
@@ -152,10 +170,22 @@ async function fetchRealContributions(username: string, year?: number): Promise<
   if (!token) {
     throw new GitHubAPIError('GitHub token is required for contribution data. Please set GITHUB_TOKEN environment variable.');
   }
+  
+  // Validate token format (should be a valid GitHub personal access token)
+  if (!token.startsWith('ghp_') && !token.startsWith('github_pat_')) {
+    console.warn('GitHub token format appears invalid. Expected format: ghp_... or github_pat_...');
+  }
 
   const targetYear = year || new Date().getFullYear();
+  const currentDate = new Date();
+  
+  // If requesting current year, use current date as end date
+  // If requesting past year, use end of that year
+  const endDate = targetYear === currentDate.getFullYear() ? currentDate : new Date(targetYear, 11, 31);
   const fromDate = `${targetYear}-01-01T00:00:00Z`;
-  const toDate = `${targetYear}-12-31T23:59:59Z`;
+  const toDate = endDate.toISOString();
+  
+  console.log(`Fetching contributions for ${username} from ${fromDate} to ${toDate}`);
 
   const query = `
     query($username: String!, $from: DateTime!, $to: DateTime!) {
@@ -181,13 +211,17 @@ async function fetchRealContributions(username: string, year?: number): Promise<
     from: fromDate,
     to: toDate
   };
+  
+  console.log('GraphQL query:', query);
+  console.log('GraphQL variables:', variables);
 
   const response = await fetch('https://api.github.com/graphql', {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
-      'User-Agent': 'GitHub-Activity-Tracker'
+      'User-Agent': 'GitHub-Activity-Tracker',
+      'Accept': 'application/vnd.github.v4+json'
     },
     body: JSON.stringify({ query, variables })
   });
@@ -203,6 +237,14 @@ async function fetchRealContributions(username: string, year?: number): Promise<
   }
 
   const data = await response.json();
+  
+  console.log('Raw GitHub API response:', {
+    hasData: !!data.data,
+    hasUser: !!data.data?.user,
+    hasContributions: !!data.data?.user?.contributionsCollection,
+    responseStatus: response.status,
+    responseHeaders: Object.fromEntries(response.headers.entries())
+  });
 
   if (data.errors) {
     console.error('GraphQL errors:', data.errors);
@@ -212,58 +254,163 @@ async function fetchRealContributions(username: string, year?: number): Promise<
   if (!data.data?.user) {
     throw new GitHubAPIError(`User '${username}' not found`, 404);
   }
+  
+  if (!data.data.user.contributionsCollection) {
+    throw new GitHubAPIError('User has no contribution data available');
+  }
 
   const contributionCalendar = data.data.user.contributionsCollection.contributionCalendar;
   
+  // Validate the contribution calendar data
+  if (!contributionCalendar || !contributionCalendar.weeks || !Array.isArray(contributionCalendar.weeks)) {
+    throw new GitHubAPIError('Invalid contribution calendar data received from GitHub API');
+  }
+  
+  // Validate total contributions is a reasonable number
+  if (typeof contributionCalendar.totalContributions !== 'number' || contributionCalendar.totalContributions < 0) {
+    console.warn('Warning: Invalid total contributions value:', contributionCalendar.totalContributions);
+  }
+  
+  // Log raw data for debugging
+  console.log(`Raw contribution data for ${username}:`, {
+    totalContributions: contributionCalendar.totalContributions,
+    weeksCount: contributionCalendar.weeks.length,
+    sampleWeek: contributionCalendar.weeks[0]
+  });
+  
   // Transform GitHub's GraphQL response to match our expected format
-  const weeks = contributionCalendar.weeks.map((week: GitHubContributionWeek) => ({
-    contributionDays: week.contributionDays.map((day: GitHubContributionDay) => {
-      // Convert GitHub's string levels to numbers
-      let level: 0 | 1 | 2 | 3 | 4 = 0;
-      switch (day.contributionLevel) {
-        case 'NONE': level = 0; break;
-        case 'FIRST_QUARTILE': level = 1; break;
-        case 'SECOND_QUARTILE': level = 2; break;
-        case 'THIRD_QUARTILE': level = 3; break;
-        case 'FOURTH_QUARTILE': level = 4; break;
-        default: level = 0;
-      }
-      
-      return {
-        date: day.date,
-        count: day.contributionCount,
-        level
-      };
-    })
-  }));
+  const weeks = contributionCalendar.weeks.map((week: GitHubContributionWeek) => {
+    // Validate week data
+    if (!week.contributionDays || !Array.isArray(week.contributionDays)) {
+      console.warn('Invalid week data received:', week);
+      return { contributionDays: [] };
+    }
+    
+    // Validate that each week has exactly 7 days (GitHub's standard)
+    if (week.contributionDays.length !== 7) {
+      console.warn(`Warning: Week has ${week.contributionDays.length} days instead of 7:`, week);
+    }
+    
+    return {
+      contributionDays: week.contributionDays.map((day: GitHubContributionDay) => {
+        // Validate day data
+        if (!day.date || typeof day.contributionCount !== 'number') {
+          console.warn('Invalid day data received:', day);
+          return {
+            date: day.date || '1970-01-01',
+            count: 0,
+            level: 0
+          };
+        }
+        
+        // Validate date format (should be YYYY-MM-DD)
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(day.date)) {
+          console.warn('Invalid date format received:', day.date);
+        }
+        
+        // Validate contribution count is reasonable
+        if (day.contributionCount > 1000) {
+          console.warn('Unusually high contribution count:', day.contributionCount, 'for date:', day.date);
+        }
+        
+        // Convert GitHub's string levels to numbers
+        let level: 0 | 1 | 2 | 3 | 4 = 0;
+        switch (day.contributionLevel) {
+          case 'NONE': level = 0; break;
+          case 'FIRST_QUARTILE': level = 1; break;
+          case 'SECOND_QUARTILE': level = 2; break;
+          case 'THIRD_QUARTILE': level = 3; break;
+          case 'FOURTH_QUARTILE': level = 4; break;
+          default: level = 0;
+        }
+        
+        return {
+          date: day.date,
+          count: day.contributionCount,
+          level
+        };
+      }).filter(day => day.count >= 0) // Filter out invalid days
+    };
+  });
+
+  // Filter out empty weeks and validate final data
+  const validWeeks = weeks.filter((week: { contributionDays: { length: number }[] }) => week.contributionDays.length > 0);
+  
+  if (validWeeks.length === 0) {
+    throw new GitHubAPIError('No valid contribution data found for the specified time period');
+  }
+  
+  // Calculate total days and validate
+  const totalDays = validWeeks.reduce((sum: number, week: { contributionDays: { length: number }[] }) => sum + week.contributionDays.length, 0);
+  
+  // Validate that we have a reasonable number of days
+  if (totalDays < 7) {
+    console.warn('Warning: Very few contribution days found:', totalDays);
+  }
+  
+  if (totalDays > 400) {
+    console.warn('Warning: Unusually many contribution days found:', totalDays);
+  }
+  
+  // Log transformed data for debugging
+  console.log(`Transformed contribution data for ${username}:`, {
+    weeksCount: validWeeks.length,
+    totalDays,
+    sampleDay: validWeeks[0]?.contributionDays[0],
+    dateRange: {
+      first: validWeeks[0]?.contributionDays[0]?.date,
+      last: validWeeks[validWeeks.length - 1]?.contributionDays[6]?.date
+    }
+  });
 
   return {
-    weeks,
+    weeks: validWeeks,
     totalContributions: contributionCalendar.totalContributions
   };
 }
 
 export function calculateActivityStats(contributionData: ContributionData): ActivityStats {
+  // Validate input data
+  if (!contributionData || !contributionData.weeks || contributionData.weeks.length === 0) {
+    throw new Error('Invalid contribution data: missing or empty weeks data');
+  }
+  
   const allDays = contributionData.weeks.flatMap(week => week.contributionDays);
+  
+  // Validate days data
+  if (!allDays || allDays.length === 0) {
+    throw new Error('Invalid contribution data: no contribution days found');
+  }
+  
   const totalContributions = allDays.reduce((sum, day) => sum + day.count, 0);
+  
+  // Sort days by date to ensure proper chronological order
+  const sortedDays = allDays.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   
   // Calculate streaks
   let currentStreak = 0;
   let longestStreak = 0;
   let tempStreak = 0;
   
-  // Start from most recent day
-  const sortedDays = [...allDays].reverse();
+  // Calculate current streak (consecutive days from most recent)
+  // Start from the end (most recent) and work backwards
+  for (let i = sortedDays.length - 1; i >= 0; i--) {
+    const day = sortedDays[i];
+    if (day.count > 0) {
+      currentStreak++;
+    } else {
+      break; // Stop at first day with no contributions
+    }
+  }
   
+  // Calculate longest streak
   for (let i = 0; i < sortedDays.length; i++) {
     const day = sortedDays[i];
     if (day.count > 0) {
       tempStreak++;
-      if (i < 7) currentStreak++; // Only count recent days for current streak
     } else {
       longestStreak = Math.max(longestStreak, tempStreak);
       tempStreak = 0;
-      if (i < 7) currentStreak = 0;
     }
   }
   longestStreak = Math.max(longestStreak, tempStreak);
@@ -273,9 +420,10 @@ export function calculateActivityStats(contributionData: ContributionData): Acti
   const monthStats: { [key: string]: number } = {};
   
   allDays.forEach(day => {
-    const date = new Date(day.date);
-    const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
-    const monthName = date.toLocaleDateString('en-US', { month: 'long' });
+    // Ensure consistent date parsing by using UTC
+    const date = new Date(day.date + 'T00:00:00Z');
+    const dayName = date.toLocaleDateString('en-US', { weekday: 'long', timeZone: 'UTC' });
+    const monthName = date.toLocaleDateString('en-US', { month: 'long', timeZone: 'UTC' });
     
     dayStats[dayName] = (dayStats[dayName] || 0) + day.count;
     monthStats[monthName] = (monthStats[monthName] || 0) + day.count;
@@ -289,7 +437,7 @@ export function calculateActivityStats(contributionData: ContributionData): Acti
     monthStats[a] > monthStats[b] ? a : b
   );
   
-  return {
+  const stats = {
     longestStreak,
     currentStreak,
     totalContributions,
@@ -298,10 +446,76 @@ export function calculateActivityStats(contributionData: ContributionData): Acti
     mostActiveMonth,
     contributionsLastYear: totalContributions
   };
+  
+  // Log calculated stats for debugging
+  console.log('Calculated activity stats:', {
+    totalDays: allDays.length,
+    totalContributions,
+    currentStreak,
+    longestStreak,
+    mostActiveDay,
+    mostActiveMonth,
+    averagePerDay: stats.averagePerDay
+  });
+  
+  // Validate that the stats make sense
+  if (totalContributions < 0) {
+    console.warn('Warning: Negative total contributions detected');
+  }
+  
+  if (currentStreak > allDays.length) {
+    console.warn('Warning: Current streak exceeds total days');
+  }
+  
+  if (longestStreak > allDays.length) {
+    console.warn('Warning: Longest streak exceeds total days');
+  }
+  
+  // Check for unrealistic contribution counts (GitHub typically has reasonable limits)
+  const maxReasonableContributions = 1000; // Per day
+  const daysWithHighContributions = allDays.filter(day => day.count > maxReasonableContributions);
+  if (daysWithHighContributions.length > 0) {
+    console.warn(`Warning: ${daysWithHighContributions.length} days have unusually high contribution counts (>${maxReasonableContributions})`);
+  }
+  
+  // Validate average contributions per day
+  if (stats.averagePerDay > 100) {
+    console.warn('Warning: Unusually high average contributions per day:', stats.averagePerDay);
+  }
+  
+  // Validate that most active day and month are not empty
+  if (!stats.mostActiveDay || !stats.mostActiveMonth) {
+    console.warn('Warning: Most active day or month is empty');
+  }
+  
+  // Log additional validation info
+  console.log('Data validation summary:', {
+    totalDays: allDays.length,
+    daysWithContributions: allDays.filter(day => day.count > 0).length,
+    daysWithoutContributions: allDays.filter(day => day.count === 0).length,
+    maxContributionsInDay: Math.max(...allDays.map(day => day.count)),
+    minContributionsInDay: Math.min(...allDays.map(day => day.count))
+  });
+  
+  return stats;
 }
 
 export async function fetchGitHubAnalytics(username: string): Promise<GitHubAnalytics> {
   try {
+    // Check if GitHub token is available
+    if (!process.env.GITHUB_TOKEN) {
+      console.error('GitHub token is missing from environment variables');
+      throw new GitHubAPIError('GitHub token is required. Please set GITHUB_TOKEN environment variable.', 401);
+    }
+    
+    // Log environment info for debugging
+    console.log('Environment check:', {
+      hasToken: !!process.env.GITHUB_TOKEN,
+      tokenLength: process.env.GITHUB_TOKEN?.length || 0,
+      nodeEnv: process.env.NODE_ENV,
+      username
+    });
+    
     const [contributions, repositories, languages] = await Promise.all([
       fetchContributions(username),
       fetchUserRepositories(username),
@@ -321,6 +535,6 @@ export async function fetchGitHubAnalytics(username: string): Promise<GitHubAnal
     if (error instanceof GitHubAPIError) {
       throw error;
     }
-    throw new GitHubAPIError('Failed to fetch GitHub analytics');
+    throw new GitHubAPIError(`Failed to fetch GitHub analytics: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }

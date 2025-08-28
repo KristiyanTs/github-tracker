@@ -59,7 +59,25 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
       setData(analytics);
     } catch (err: unknown) {
       console.error('Analytics fetch error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch GitHub analytics. Please try again.');
+      
+      // Provide more specific error messages
+      let errorMessage = 'Failed to fetch GitHub analytics. Please try again.';
+      
+      if (err instanceof Error) {
+        if (err.message.includes('GitHub token')) {
+          errorMessage = 'GitHub authentication is required. Please check your configuration.';
+        } else if (err.message.includes('rate limit')) {
+          errorMessage = 'GitHub API rate limit exceeded. Please try again later.';
+        } else if (err.message.includes('not found')) {
+          errorMessage = 'GitHub user not found. Please check the username.';
+        } else if (err.message.includes('unavailable')) {
+          errorMessage = 'GitHub data is currently unavailable. Please try again later.';
+        } else {
+          errorMessage = err.message;
+        }
+      }
+      
+      setError(errorMessage);
       setData(null);
     } finally {
       setLoading(false);
