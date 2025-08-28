@@ -25,7 +25,7 @@ const MONTHS = [
   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
 ];
 
-const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 export default function ContributionHeatmap({ 
   data, 
@@ -154,19 +154,31 @@ export default function ContributionHeatmap({
           <div className="flex gap-1 mt-5">
             {weeks.map((week, weekIndex) => (
               <div key={weekIndex} className="flex flex-col gap-1">
-                {week.contributionDays.map((day, dayIndex) => (
-                  <div
-                    key={`${weekIndex}-${dayIndex}`}
-                    className="w-2.5 h-2.5 rounded-sm cursor-pointer transition-all duration-200 hover:scale-110"
-                    style={{
-                      backgroundColor: LEVEL_COLORS[day.level],
-                      outline: day.count > 0 ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'
-                    }}
-                    onMouseEnter={(e) => handleDayHover(day, e)}
-                    onMouseLeave={handleDayLeave}
-                    title={`${day.count} contributions on ${day.date}`}
-                  />
-                ))}
+                {/* Create array of 7 elements for each day of the week */}
+                {Array.from({ length: 7 }, (_, dayIndex) => {
+                  const day = week.contributionDays.find(d => {
+                    const date = new Date(d.date);
+                    return date.getDay() === dayIndex;
+                  });
+                  
+                  return day ? (
+                    <div
+                      key={`${weekIndex}-${dayIndex}`}
+                      className="w-2.5 h-2.5 rounded-sm cursor-pointer transition-all duration-200 hover:scale-110"
+                      style={{
+                        backgroundColor: LEVEL_COLORS[day.level],
+                        outline: day.count > 0 ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'
+                      }}
+                      onMouseEnter={(e) => handleDayHover(day, e)}
+                      onMouseLeave={handleDayLeave}
+                    />
+                  ) : (
+                    <div
+                      key={`${weekIndex}-${dayIndex}-empty`}
+                      className="w-2.5 h-2.5"
+                    />
+                  );
+                })}
               </div>
             ))}
           </div>

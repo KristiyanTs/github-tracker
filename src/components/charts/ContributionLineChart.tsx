@@ -14,20 +14,27 @@ interface ContributionLineChartProps {
 }
 
 export default function ContributionLineChart({ data, className = '' }: ContributionLineChartProps) {
-  // Transform data for line chart (weekly aggregation)
-  const chartData = data.weeks.map((week, index) => {
-    const weekTotal = week.contributionDays.reduce((sum, day) => sum + day.count, 0);
-    const firstDay = week.contributionDays[0];
-    const date = new Date(firstDay.date);
-    const monthLabel = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    
-    return {
-      week: `Week ${index + 1}`,
-      contributions: weekTotal,
-      label: monthLabel,
-      date: firstDay.date
-    };
-  });
+  const currentDate = new Date();
+  
+  // Transform data for line chart (weekly aggregation) - only up to current date
+  const chartData = data.weeks
+    .map((week, index) => {
+      const weekTotal = week.contributionDays.reduce((sum, day) => sum + day.count, 0);
+      const firstDay = week.contributionDays[0];
+      const date = new Date(firstDay.date);
+      const monthLabel = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      
+      return {
+        week: `Week ${index + 1}`,
+        contributions: weekTotal,
+        label: monthLabel,
+        date: firstDay.date
+      };
+    })
+    .filter(weekData => {
+      const weekDate = new Date(weekData.date);
+      return weekDate <= currentDate;
+    });
 
   const chartConfig = {
     data: {
