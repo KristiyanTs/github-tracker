@@ -9,6 +9,7 @@ import LanguageChart from './charts/LanguageChart';
 import StatsCard from './charts/StatsCard';
 import ExportButton from './ExportButton';
 import ExportDropdown from './ExportDropdown';
+import { calculateActivityStats } from '@/lib/github-api';
 
 interface GitHubAnalyticsProps {
   username: string;
@@ -21,6 +22,7 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeChart, setActiveChart] = useState<ChartType>('all');
+  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
 
   // Automatically fetch data when component mounts or username changes
   React.useEffect(() => {
@@ -28,6 +30,13 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
       fetchAnalytics();
     }
   }, [username]);
+
+  // Refetch only contribution data when year changes
+  React.useEffect(() => {
+    if (username && data) {
+      fetchContributionsOnly(selectedYear);
+    }
+  }, [selectedYear]);
 
   const fetchAnalytics = async () => {
     if (!username.trim()) {
@@ -54,6 +63,39 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
       setData(null);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleYearChange = (year: number) => {
+    setSelectedYear(year);
+  };
+
+  const fetchContributionsOnly = async (year: number) => {
+    if (!username.trim()) return;
+    
+    try {
+      const url = `/api/github/${encodeURIComponent(username.trim())}/contributions?year=${year}`;
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to fetch contribution data');
+      }
+      
+      const newContributions = await response.json();
+      
+      // Update only the contributions data, keeping everything else the same
+      setData(prevData => {
+        if (!prevData) return prevData;
+        return {
+          ...prevData,
+          contributions: newContributions,
+          stats: calculateActivityStats(newContributions)
+        };
+      });
+    } catch (err: unknown) {
+      console.error('Contributions fetch error:', err);
+      // Don't show error to user for year changes, just log it
     }
   };
 
@@ -198,7 +240,12 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
         {(activeChart === 'all' || activeChart === 'heatmap') && (
           <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
             <div id="heatmap-chart">
-              <ContributionHeatmap data={data.contributions} />
+              <ContributionHeatmap 
+                data={data.contributions} 
+                onYearChange={handleYearChange}
+                availableYears={Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i)}
+                selectedYear={selectedYear}
+              />
             </div>
           </div>
         )}

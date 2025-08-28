@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { ContributionData, ContributionDay } from '@/types/github';
 import ExportButton from '../ExportButton';
 
@@ -35,7 +35,6 @@ export default function ContributionHeatmap({
   selectedYear
 }: ContributionHeatmapProps) {
   const { weeks } = data;
-  const [currentYear, setCurrentYear] = useState(selectedYear || new Date().getFullYear());
   
   // Generate available years if not provided (last 5 years)
   const years = availableYears.length > 0 ? availableYears : (() => {
@@ -43,15 +42,11 @@ export default function ContributionHeatmap({
     return Array.from({ length: 5 }, (_, i) => currentYear - i);
   })();
 
-  useEffect(() => {
-    if (selectedYear && selectedYear !== currentYear) {
-      setCurrentYear(selectedYear);
-    }
-  }, [selectedYear]);
+  // Use selectedYear prop directly, fallback to current year
+  const currentYear = selectedYear || new Date().getFullYear();
 
   const handleYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newYear = parseInt(event.target.value);
-    setCurrentYear(newYear);
     if (onYearChange) {
       onYearChange(newYear);
     }
@@ -211,7 +206,7 @@ export default function ContributionHeatmap({
         </div>
 
         {/* Legend */}
-        <div className="flex items-center justify-between mt-4 text-xs text-gray-400">
+        <div className="flex items-center justify-center mt-4 text-xs text-gray-400 gap-3">
           <span>Less</span>
           <div className="flex gap-1">
             {Object.entries(LEVEL_COLORS).map(([level, color]) => (
