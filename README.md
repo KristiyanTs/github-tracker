@@ -4,6 +4,8 @@
 
 A rebellious developer tool that transforms your GitHub contribution data into stunning visuals for your CV. No more boring tables or text descriptions - let your code speak with killer charts and analytics.
 
+![GitHub Activity Tracker Demo](public/demo.png)
+
 ## 🚀 What This Beast Does
 
 - **Fetch Real Data**: Connect with GitHub API to pull your actual contribution timeline
