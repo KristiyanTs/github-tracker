@@ -1,11 +1,15 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ContributionData, ContributionDay } from '@/types/github';
+import ExportButton from '../ExportButton';
 
 interface ContributionHeatmapProps {
   data: ContributionData;
   className?: string;
+  onYearChange?: (year: number) => void;
+  availableYears?: number[];
+  selectedYear?: number;
 }
 
 const LEVEL_COLORS = {
@@ -23,9 +27,36 @@ const MONTHS = [
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-export default function ContributionHeatmap({ data, className = '' }: ContributionHeatmapProps) {
+export default function ContributionHeatmap({ 
+  data, 
+  className = '', 
+  onYearChange,
+  availableYears = [],
+  selectedYear
+}: ContributionHeatmapProps) {
   const { weeks } = data;
+  const [currentYear, setCurrentYear] = useState(selectedYear || new Date().getFullYear());
   
+  // Generate available years if not provided (last 5 years)
+  const years = availableYears.length > 0 ? availableYears : (() => {
+    const currentYear = new Date().getFullYear();
+    return Array.from({ length: 5 }, (_, i) => currentYear - i);
+  })();
+
+  useEffect(() => {
+    if (selectedYear && selectedYear !== currentYear) {
+      setCurrentYear(selectedYear);
+    }
+  }, [selectedYear]);
+
+  const handleYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const newYear = parseInt(event.target.value);
+    setCurrentYear(newYear);
+    if (onYearChange) {
+      onYearChange(newYear);
+    }
+  };
+
   // Get month labels for the top of the chart
   const getMonthLabels = () => {
     const labels: { month: string; weekIndex: number }[] = [];
@@ -93,11 +124,40 @@ export default function ContributionHeatmap({ data, className = '' }: Contributi
         style={{ display: 'none' }}
       />
       
-      {/* Chart Title */}
-      <div className="mb-4">
-        <h3 className="text-xl font-bold text-white mb-2">
-          {data.totalContributions.toLocaleString()} contributions in the last year
-        </h3>
+      {/* Chart Header with Title, Year Selector, and Export Button */}
+      <div className="mb-4 flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <h3 className="text-xl font-bold text-white">
+            {data.totalContributions.toLocaleString()} contributions in {currentYear}
+          </h3>
+          
+          {/* Year Selector */}
+          <div className="flex items-center space-x-2">
+            <label htmlFor="year-selector" className="text-sm text-gray-400">
+              Year:
+            </label>
+            <select
+              id="year-selector"
+              value={currentYear}
+              onChange={handleYearChange}
+              className="bg-gray-800 border border-gray-600 text-white text-sm rounded px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              {years.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        
+        {/* Export Button */}
+        <ExportButton 
+          targetId="heatmap-chart" 
+          filename={`github-heatmap-${data.user?.login || 'user'}`}
+          minimal={true}
+          tooltip="Save heatmap image"
+        />
       </div>
 
       <div className="relative">
@@ -135,7 +195,7 @@ export default function ContributionHeatmap({ data, className = '' }: Contributi
                 {week.contributionDays.map((day, dayIndex) => (
                   <div
                     key={`${weekIndex}-${dayIndex}`}
-                    className="w-3 h-3 rounded-sm cursor-pointer transition-all duration-200 hover:scale-110"
+                    className="w-2.5 h-2.5 rounded-sm cursor-pointer transition-all duration-200 hover:scale-110"
                     style={{
                       backgroundColor: LEVEL_COLORS[day.level],
                       outline: day.count > 0 ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'

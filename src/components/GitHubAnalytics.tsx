@@ -177,15 +177,15 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
       </div>
 
       {/* Chart Navigation */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-1">
         {chartButtons.map((button) => (
           <button
             key={button.id}
             onClick={() => setActiveChart(button.id)}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
+            className={`px-3 py-1.5 rounded-md text-sm transition-colors flex items-center gap-1.5 ${
               activeChart === button.id
                 ? 'bg-green-600 text-white'
-                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                : 'bg-gray-700/50 text-gray-400 hover:bg-gray-600/50 hover:text-gray-300'
             }`}
           >
             {button.icon} {button.label}
@@ -197,15 +197,6 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
       <div className="space-y-8">
         {(activeChart === 'all' || activeChart === 'heatmap') && (
           <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-            <div className="flex justify-between items-center mb-4">
-              <div></div>
-              <ExportButton 
-                targetId="heatmap-chart" 
-                filename={`github-heatmap-${data.user.login}`}
-                minimal={true}
-                tooltip="Save heatmap as image"
-              />
-            </div>
             <div id="heatmap-chart">
               <ContributionHeatmap data={data.contributions} />
             </div>

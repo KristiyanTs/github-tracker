@@ -84,12 +84,12 @@ export async function fetchLanguageStats(username: string): Promise<LanguageStat
 // Generate contribution data from GitHub's contribution graph
 // Note: This is a simplified version. For real contribution data, you'd need to scrape
 // GitHub's contribution graph or use their GraphQL API
-export async function fetchContributions(username: string): Promise<ContributionData> {
+export async function fetchContributions(username: string, year?: number): Promise<ContributionData> {
   const user = await fetchGitHubUser(username);
   
   // This is a mock implementation since GitHub's REST API doesn't provide contribution data
   // In a real implementation, you'd use GitHub's GraphQL API or scrape the contributions page
-  const weeks = generateMockContributions();
+  const weeks = generateMockContributions(year);
   const totalContributions = weeks.reduce((total, week) => 
     total + week.contributionDays.reduce((weekTotal, day) => weekTotal + day.count, 0), 0
   );
@@ -101,38 +101,46 @@ export async function fetchContributions(username: string): Promise<Contribution
   };
 }
 
-function generateMockContributions() {
+function generateMockContributions(year?: number) {
   const weeks = [];
-  const startDate = new Date();
-  startDate.setFullYear(startDate.getFullYear() - 1);
+  const targetYear = year || new Date().getFullYear();
+  const startDate = new Date(targetYear, 0, 1); // January 1st of the target year
   
+  // Generate 53 weeks of data for the entire year
   for (let week = 0; week < 53; week++) {
     const contributionDays = [];
     for (let day = 0; day < 7; day++) {
       const date = new Date(startDate);
       date.setDate(date.getDate() + (week * 7) + day);
       
-      // Generate random contribution count with realistic patterns
-      const isWeekend = day === 0 || day === 6;
-      const baseChance = isWeekend ? 0.3 : 0.7;
-      const hasContribution = Math.random() < baseChance;
-      const count = hasContribution ? Math.floor(Math.random() * 15) + 1 : 0;
-      
-      let level: 0 | 1 | 2 | 3 | 4 = 0;
-      if (count > 0) {
-        if (count <= 3) level = 1;
-        else if (count <= 6) level = 2;
-        else if (count <= 10) level = 3;
-        else level = 4;
-      }
+      // Only include days that are within the target year
+      if (date.getFullYear() === targetYear) {
+        // Generate random contribution count with realistic patterns
+        const isWeekend = day === 0 || day === 6;
+        const baseChance = isWeekend ? 0.3 : 0.7;
+        const hasContribution = Math.random() < baseChance;
+        const count = hasContribution ? Math.floor(Math.random() * 15) + 1 : 0;
+        
+        let level: 0 | 1 | 2 | 3 | 4 = 0;
+        if (count > 0) {
+          if (count <= 3) level = 1;
+          else if (count <= 6) level = 2;
+          else if (count <= 10) level = 3;
+          else level = 4;
+        }
 
-      contributionDays.push({
-        date: date.toISOString().split('T')[0],
-        count,
-        level
-      });
+        contributionDays.push({
+          date: date.toISOString().split('T')[0],
+          count,
+          level
+        });
+      }
     }
-    weeks.push({ contributionDays });
+    
+    // Only add weeks that have contribution days
+    if (contributionDays.length > 0) {
+      weeks.push({ contributionDays });
+    }
   }
   
   return weeks;
