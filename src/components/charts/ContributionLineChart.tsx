@@ -73,11 +73,13 @@ export default function ContributionLineChart({ data, className = '' }: Contribu
           cornerRadius: 8,
           displayColors: false,
           callbacks: {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             title: function(tooltipItems: any) {
               const dataIndex = tooltipItems[0].dataIndex;
               const weekData = chartData[dataIndex];
               return `Week starting ${weekData.label}`;
             },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             label: function(tooltipItem: any) {
               return `${tooltipItem.parsed.y} contributions`;
             }
@@ -93,6 +95,7 @@ export default function ContributionLineChart({ data, className = '' }: Contribu
           ticks: {
             color: '#9ca3af',
             maxTicksLimit: 8,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             callback: function(value: any, index: number) {
               // Show every 4th label to avoid crowding
               return index % 4 === 0 ? chartData[index]?.label : '';

@@ -92,6 +92,7 @@ export default function LanguageChart({ data, type = 'pie', className = '' }: La
           cornerRadius: 8,
           displayColors: true,
           callbacks: {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             label: function(tooltipItem: any) {
               const label = tooltipItem.label || '';
               const value = tooltipItem.parsed;
@@ -106,6 +107,7 @@ export default function LanguageChart({ data, type = 'pie', className = '' }: La
             weight: 'bold' as const,
             size: 11
           },
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           formatter: function(value: any, context: any) {
             const percentage = (value / totalSize) * 100;
             // Only show labels for segments that are large enough to fit text
@@ -140,28 +142,29 @@ export default function LanguageChart({ data, type = 'pie', className = '' }: La
       responsive: true,
       maintainAspectRatio: false,
       indexAxis: 'y' as const,
-      plugins: {
-        legend: {
-          display: false,
-        },
-        tooltip: {
-          backgroundColor: 'rgba(17, 24, 39, 0.95)',
-          titleColor: '#ffffff',
-          bodyColor: '#d1d5db',
-          borderColor: '#374151',
-          borderWidth: 1,
-          cornerRadius: 8,
-          displayColors: true,
-          callbacks: {
-            label: function(tooltipItem: any) {
-              const label = tooltipItem.label || '';
-              const value = tooltipItem.parsed;
-              const percentage = ((value / totalSize) * 100).toFixed(1);
-              return `${label}: ${percentage}% (${value.toLocaleString()} bytes)`;
+                      plugins: {
+          legend: {
+            display: false,
+          },
+          tooltip: {
+            backgroundColor: 'rgba(17, 24, 39, 0.95)',
+            titleColor: '#ffffff',
+            bodyColor: '#d1d5db',
+            borderColor: '#374151',
+            borderWidth: 1,
+            cornerRadius: 8,
+            displayColors: true,
+            callbacks: {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              label: function(tooltipItem: any) {
+                const label = tooltipItem.label || '';
+                const value = tooltipItem.parsed;
+                const percentage = ((value / totalSize) * 100).toFixed(1);
+                return `${label}: ${percentage}% (${value.toLocaleString()} bytes)`;
+              }
             }
           }
-        }
-      },
+        },
       scales: {
         x: {
           grid: {
@@ -170,6 +173,7 @@ export default function LanguageChart({ data, type = 'pie', className = '' }: La
           },
           ticks: {
             color: '#9ca3af',
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             callback: function(value: any) {
               return `${(value / 1000).toFixed(0)}K`;
             }

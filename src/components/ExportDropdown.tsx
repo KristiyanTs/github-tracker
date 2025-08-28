@@ -3,9 +3,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { GitHubAnalytics } from '@/types/github';
 
 interface ExportDropdownProps {
-  data: any;
+  data: GitHubAnalytics;
   className?: string;
 }
 
@@ -109,9 +110,9 @@ export default function ExportDropdown({ data, className = '' }: ExportDropdownP
           `Public Repositories: ${data.user.public_repos}`,
           `Followers: ${data.user.followers}`,
           `Following: ${data.user.following}`,
-          `Total Commits: ${data.stats.totalCommits}`,
-          `Total Stars: ${data.stats.totalStars}`,
-          `Total Forks: ${data.stats.totalForks}`,
+          `Total Contributions: ${data.stats.totalContributions}`,
+          `Current Streak: ${data.stats.currentStreak} days`,
+          `Longest Streak: ${data.stats.longestStreak} days`,
           `Account Created: ${new Date(data.user.created_at).toLocaleDateString()}`
         ];
         

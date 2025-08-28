@@ -1,4 +1,4 @@
-import { GitHubUser, Repository, LanguageStats, ContributionData, ActivityStats, GitHubAnalytics, ContributionWeek } from '@/types/github';
+import { GitHubUser, Repository, LanguageStats, ContributionData, ActivityStats, GitHubAnalytics, ContributionWeek, GitHubProfileAchievements, GitHubAchievement } from '@/types/github';
 
 const GITHUB_API_BASE = 'https://api.github.com';
 
@@ -507,6 +507,334 @@ export function calculateActivityStats(contributionData: ContributionData, year?
   return stats;
 }
 
+// Calculate GitHub profile achievements based on user data
+function calculateProfileAchievements(user: GitHubUser, stats: ActivityStats, repositories: Repository[]): GitHubProfileAchievements {
+  const achievements: GitHubAchievement[] = [];
+  
+  // Profile completion achievements
+  const profileFields = [
+    { field: user.name, name: 'Name Set', description: 'Set your display name' },
+    { field: user.bio, name: 'Bio Added', description: 'Added a bio to your profile' },
+    { field: user.location, name: 'Location Set', description: 'Set your location' },
+    { field: user.company, name: 'Company Added', description: 'Added company information' },
+    { field: user.blog, name: 'Website Added', description: 'Added a website link' }
+  ];
+  
+  const completedFields = profileFields.filter(f => f.field).length;
+  const profileCompletion = Math.round((completedFields / profileFields.length) * 100);
+  
+  // Profile completion badge
+  if (profileCompletion >= 100) {
+    achievements.push({
+      id: 'profile-master',
+      name: 'Profile Master',
+      description: 'Complete profile with all fields filled',
+      icon: '🏆',
+      category: 'profile',
+      unlocked: true,
+      unlockedAt: new Date().toISOString()
+    });
+  } else if (profileCompletion >= 80) {
+    achievements.push({
+      id: 'profile-expert',
+      name: 'Profile Expert',
+      description: 'Nearly complete profile',
+      icon: '⭐',
+      category: 'profile',
+      unlocked: true,
+      unlockedAt: new Date().toISOString()
+    });
+  } else if (profileCompletion >= 60) {
+    achievements.push({
+      id: 'profile-enthusiast',
+      name: 'Profile Enthusiast',
+      description: 'Good profile completion',
+      icon: '🌟',
+      category: 'profile',
+      unlocked: true,
+      unlockedAt: new Date().toISOString()
+    });
+  }
+  
+  // Repository achievements
+  if (user.public_repos >= 100) {
+    achievements.push({
+      id: 'repository-legend',
+      name: 'Repository Legend',
+      description: '100+ public repositories',
+      icon: '📚',
+      category: 'repository',
+      unlocked: true,
+      unlockedAt: new Date().toISOString()
+    });
+  } else if (user.public_repos >= 50) {
+    achievements.push({
+      id: 'repository-expert',
+      name: 'Repository Expert',
+      description: '50+ public repositories',
+      icon: '📖',
+      category: 'repository',
+      unlocked: true,
+      unlockedAt: new Date().toISOString()
+    });
+  } else if (user.public_repos >= 10) {
+    achievements.push({
+      id: 'repository-enthusiast',
+      name: 'Repository Enthusiast',
+      description: '10+ public repositories',
+      icon: '📝',
+      category: 'repository',
+      unlocked: true,
+      unlockedAt: new Date().toISOString()
+    });
+  } else if (user.public_repos >= 1) {
+    achievements.push({
+      id: 'first-repository',
+      name: 'First Repository',
+      description: 'Created your first repository',
+      icon: '🎯',
+      category: 'repository',
+      unlocked: true,
+      unlockedAt: new Date().toISOString()
+    });
+  }
+  
+  // Contribution achievements
+  if (stats.totalContributions >= 10000) {
+    achievements.push({
+      id: 'contribution-legend',
+      name: 'Contribution Legend',
+      description: '10,000+ total contributions',
+      icon: '🔥',
+      category: 'contribution',
+      unlocked: true,
+      unlockedAt: new Date().toISOString()
+    });
+  } else if (stats.totalContributions >= 5000) {
+    achievements.push({
+      id: 'contribution-master',
+      name: 'Contribution Master',
+      description: '5,000+ total contributions',
+      icon: '⚡',
+      category: 'contribution',
+      unlocked: true,
+      unlockedAt: new Date().toISOString()
+    });
+  } else if (stats.totalContributions >= 1000) {
+    achievements.push({
+      id: 'contribution-expert',
+      name: 'Contribution Expert',
+      description: '1,000+ total contributions',
+      icon: '💪',
+      category: 'contribution',
+      unlocked: true,
+      unlockedAt: new Date().toISOString()
+    });
+  } else if (stats.totalContributions >= 100) {
+    achievements.push({
+      id: 'contribution-enthusiast',
+      name: 'Contribution Enthusiast',
+      description: '100+ total contributions',
+      icon: '🚀',
+      category: 'contribution',
+      unlocked: true,
+      unlockedAt: new Date().toISOString()
+    });
+  }
+  
+  // Streak achievements
+  if (stats.longestStreak >= 365) {
+    achievements.push({
+      id: 'streak-legend',
+      name: 'Streak Legend',
+      description: '365+ day contribution streak',
+      icon: '🌅',
+      category: 'contribution',
+      unlocked: true,
+      unlockedAt: new Date().toISOString()
+    });
+  } else if (stats.longestStreak >= 100) {
+    achievements.push({
+      id: 'streak-master',
+      name: 'Streak Master',
+      description: '100+ day contribution streak',
+      icon: '🔥',
+      category: 'contribution',
+      unlocked: true,
+      unlockedAt: new Date().toISOString()
+    });
+  } else if (stats.longestStreak >= 30) {
+    achievements.push({
+      id: 'streak-expert',
+      name: 'Streak Expert',
+      description: '30+ day contribution streak',
+      icon: '📈',
+      category: 'contribution',
+      unlocked: true,
+      unlockedAt: new Date().toISOString()
+    });
+  } else if (stats.longestStreak >= 7) {
+    achievements.push({
+      id: 'streak-enthusiast',
+      name: 'Streak Enthusiast',
+      description: '7+ day contribution streak',
+      icon: '📊',
+      category: 'contribution',
+      unlocked: true,
+      unlockedAt: new Date().toISOString()
+    });
+  }
+  
+  // Social achievements
+  if (user.followers >= 1000) {
+    achievements.push({
+      id: 'social-legend',
+      name: 'Social Legend',
+      description: '1,000+ followers',
+      icon: '👑',
+      category: 'social',
+      unlocked: true,
+      unlockedAt: new Date().toISOString()
+    });
+  } else if (user.followers >= 500) {
+    achievements.push({
+      id: 'social-expert',
+      name: 'Social Expert',
+      description: '500+ followers',
+      icon: '🌟',
+      category: 'social',
+      unlocked: true,
+      unlockedAt: new Date().toISOString()
+    });
+  } else if (user.followers >= 100) {
+    achievements.push({
+      id: 'social-enthusiast',
+      name: 'Social Enthusiast',
+      description: '100+ followers',
+      icon: '💫',
+      category: 'social',
+      unlocked: true,
+      unlockedAt: new Date().toISOString()
+    });
+  } else if (user.followers >= 10) {
+    achievements.push({
+      id: 'social-starter',
+      name: 'Social Starter',
+      description: '10+ followers',
+      icon: '✨',
+      category: 'social',
+      unlocked: true,
+      unlockedAt: new Date().toISOString()
+    });
+  }
+  
+  // Milestone achievements
+  const accountAge = new Date().getTime() - new Date(user.created_at).getTime();
+  const accountAgeYears = Math.floor(accountAge / (1000 * 60 * 60 * 24 * 365));
+  
+  if (accountAgeYears >= 10) {
+    achievements.push({
+      id: 'veteran',
+      name: 'GitHub Veteran',
+      description: '10+ years on GitHub',
+      icon: '🏛️',
+      category: 'milestone',
+      unlocked: true,
+      unlockedAt: new Date().toISOString()
+    });
+  } else if (accountAgeYears >= 5) {
+    achievements.push({
+      id: 'experienced',
+      name: 'Experienced Developer',
+      description: '5+ years on GitHub',
+      icon: '🎓',
+      category: 'milestone',
+      unlocked: true,
+      unlockedAt: new Date().toISOString()
+    });
+  } else if (accountAgeYears >= 2) {
+    achievements.push({
+      id: 'established',
+      name: 'Established Developer',
+      description: '2+ years on GitHub',
+      icon: '🎯',
+      category: 'milestone',
+      unlocked: true,
+      unlockedAt: new Date().toISOString()
+    });
+  } else if (accountAgeYears >= 1) {
+    achievements.push({
+      id: 'one-year',
+      name: 'One Year Strong',
+      description: '1+ year on GitHub',
+      icon: '🎉',
+      category: 'milestone',
+      unlocked: true,
+      unlockedAt: new Date().toISOString()
+    });
+  }
+  
+  // Special badges based on activity patterns
+  const specialBadges: string[] = [];
+  
+  if (stats.averagePerDay >= 10) {
+    specialBadges.push('🚀 High Activity');
+  }
+  
+  if (repositories.length > 0) {
+    const hasStarredRepos = repositories.some(repo => repo.stargazers_count > 0);
+    if (hasStarredRepos) {
+      specialBadges.push('⭐ Starred Projects');
+    }
+    
+    const hasForkedRepos = repositories.some(repo => repo.forks_count > 0);
+    if (hasForkedRepos) {
+      specialBadges.push('🍴 Forked Projects');
+    }
+    
+    // Repository size achievements
+    const totalRepoSize = repositories.reduce((sum, repo) => sum + repo.size, 0);
+    if (totalRepoSize > 1000000) { // 1MB
+      specialBadges.push('💾 Large Codebase');
+    }
+    
+    // Most popular repository
+    const mostStarredRepo = repositories.reduce((max, repo) => 
+      repo.stargazers_count > max.stargazers_count ? repo : max
+    );
+    if (mostStarredRepo.stargazers_count >= 100) {
+      specialBadges.push('🌟 Popular Project');
+    } else if (mostStarredRepo.stargazers_count >= 10) {
+      specialBadges.push('⭐ Rising Star');
+    }
+  }
+  
+  if (user.public_gists > 0) {
+    specialBadges.push('📝 Gist Creator');
+  }
+  
+  // Activity pattern badges
+  if (stats.currentStreak >= 7) {
+    specialBadges.push('🔥 Active Streak');
+  }
+  
+  if (stats.contributionsLastYear >= 1000) {
+    specialBadges.push('📈 Consistent Contributor');
+  }
+  
+  // Account age badges
+  if (accountAgeYears >= 1) {
+    specialBadges.push('🎯 Established Developer');
+  }
+  
+  return {
+    profileCompletion,
+    achievements,
+    badges: achievements.map(a => a.icon + ' ' + a.name),
+    specialBadges
+  };
+}
+
 export async function fetchGitHubAnalytics(username: string): Promise<GitHubAnalytics> {
   try {
     // Check if GitHub token is available
@@ -530,13 +858,15 @@ export async function fetchGitHubAnalytics(username: string): Promise<GitHubAnal
     ]);
 
     const stats = calculateActivityStats(contributions);
+    const achievements = calculateProfileAchievements(contributions.user, stats, repositories);
 
     return {
       user: contributions.user,
       contributions,
       repositories,
       languages,
-      stats
+      stats,
+      achievements
     };
   } catch (error) {
     if (error instanceof GitHubAPIError) {

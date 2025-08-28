@@ -2,13 +2,10 @@
 
 import React from 'react';
 import { ContributionData, ContributionDay } from '@/types/github';
-import ExportButton from '../ExportButton';
 
 interface ContributionHeatmapProps {
   data: ContributionData;
   className?: string;
-  onYearChange?: (year: number) => void;
-  availableYears?: number[];
   selectedYear?: number;
 }
 
@@ -30,27 +27,16 @@ const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 export default function ContributionHeatmap({ 
   data, 
   className = '', 
-  onYearChange,
-  availableYears = [],
   selectedYear
 }: ContributionHeatmapProps) {
   const { weeks } = data;
   
-  // Generate available years if not provided (last 5 years)
-  const years = availableYears.length > 0 ? availableYears : (() => {
-    const currentYear = new Date().getFullYear();
-    return Array.from({ length: 5 }, (_, i) => currentYear - i);
-  })();
+
 
   // Use selectedYear prop directly, fallback to current year
   const currentYear = selectedYear || new Date().getFullYear();
 
-  const handleYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newYear = parseInt(event.target.value);
-    if (onYearChange) {
-      onYearChange(newYear);
-    }
-  };
+
 
   // Get month labels for the top of the chart
   const getMonthLabels = () => {

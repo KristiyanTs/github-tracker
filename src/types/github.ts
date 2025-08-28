@@ -60,12 +60,32 @@ export interface ActivityStats {
   contributionsLastYear: number;
 }
 
+export interface GitHubAchievement {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  category: 'profile' | 'contribution' | 'repository' | 'social' | 'milestone';
+  unlocked: boolean;
+  unlockedAt?: string;
+  progress?: number;
+  maxProgress?: number;
+}
+
+export interface GitHubProfileAchievements {
+  profileCompletion: number;
+  achievements: GitHubAchievement[];
+  badges: string[];
+  specialBadges: string[];
+}
+
 export interface GitHubAnalytics {
   user: GitHubUser;
   contributions: ContributionData;
   repositories: Repository[];
   languages: LanguageStats;
   stats: ActivityStats;
+  achievements?: GitHubProfileAchievements;
 }
 
 export interface ExportOptions {
