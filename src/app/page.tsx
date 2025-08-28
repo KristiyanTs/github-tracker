@@ -1,24 +1,18 @@
 'use client';
 
 import React, { useState } from 'react';
-import GitHubAnalytics from '@/components/GitHubAnalytics';
-import ClientOnly from '@/components/ClientOnly';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
   const [username, setUsername] = useState('');
-  const [submittedUsername, setSubmittedUsername] = useState('');
   const [isClient, setIsClient] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (username.trim()) {
-      setSubmittedUsername(username.trim());
+      router.push(`/${encodeURIComponent(username.trim())}`);
     }
-  };
-
-  const handleReset = () => {
-    setUsername('');
-    setSubmittedUsername('');
   };
 
   React.useEffect(() => {
@@ -42,14 +36,7 @@ export default function Home() {
                 <p className="text-sm text-gray-400">Break the rules. Own your code.</p>
               </div>
             </div>
-            {submittedUsername && (
-              <button
-                onClick={handleReset}
-                className="bg-gray-800 hover:bg-gray-700 text-gray-300 px-4 py-2 rounded-lg transition-colors text-sm"
-              >
-                New Analysis
-              </button>
-            )}
+
           </div>
         </div>
       </header>
@@ -59,7 +46,7 @@ export default function Home() {
           <div className="flex items-center justify-center py-32">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-400"></div>
           </div>
-        ) : !submittedUsername ? (
+        ) : (
           <div className="py-24">
             {/* Hero Section */}
             <div className="text-center mb-20">
@@ -154,12 +141,6 @@ export default function Home() {
                 </span>
               </div>
             </div>
-          </div>
-        ) : (
-          <div className="py-8">
-            <ClientOnly key={submittedUsername}>
-              <GitHubAnalytics username={submittedUsername} />
-            </ClientOnly>
           </div>
         )}
       </main>
