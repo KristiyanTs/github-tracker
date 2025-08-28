@@ -19,7 +19,7 @@ interface StatItemProps {
 
 function StatItem({ title, value, subtitle, icon, disabled = false }: StatItemProps) {
   return (
-    <div className={`bg-gray-800 border border-gray-700 rounded-lg p-4 transition-colors ${
+    <div className={`border border-gray-700/50 rounded-lg p-4 transition-colors ${
       disabled 
         ? 'opacity-50 cursor-not-allowed' 
         : 'hover:border-green-500/50'
@@ -32,7 +32,7 @@ function StatItem({ title, value, subtitle, icon, disabled = false }: StatItemPr
         )}
         <div className="flex-1 min-w-0">
           <h4 className={`text-lg font-bold truncate ${disabled ? 'text-gray-500' : 'text-white'}`}>{title}</h4>
-          <p className={`text-2xl font-extrabold mt-1 ${disabled ? 'text-gray-500' : 'text-green-400'}`}>{value}</p>
+          <p className={`text-lg font-semibold mt-1 ${disabled ? 'text-gray-500' : 'text-green-400'}`}>{value}</p>
           {subtitle && (
             <p className={`text-sm mt-1 ${disabled ? 'text-gray-400' : 'text-gray-400'}`}>{subtitle}</p>
           )}
@@ -171,27 +171,27 @@ export default function StatsCard({ stats, className = '', selectedYear }: Stats
           Quick Insights
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
-          <div className="flex justify-between items-center py-2 border-b border-gray-700">
+          <div className="flex justify-between items-center py-2">
             <span className="text-gray-400">Consistency:</span>
             <span className="text-green-400 font-medium">{consistencyScore}</span>
           </div>
-          <div className="flex justify-between items-center py-2 border-b border-gray-700">
+          <div className="flex justify-between items-center py-2">
             <span className="text-gray-400">Activity Level:</span>
             <span className="text-blue-400 font-medium">{activityLevel}</span>
           </div>
-          <div className="flex justify-between items-center py-2 border-b border-gray-700">
+          <div className="flex justify-between items-center py-2">
             <span className="text-gray-400">Streak Power:</span>
             <span className="text-purple-400 font-medium">{streakEfficiency}%</span>
           </div>
-          <div className="flex justify-between items-center py-2 border-b border-gray-700">
+          <div className="flex justify-between items-center py-2">
             <span className="text-gray-400">Weekly Avg:</span>
             <span className="text-yellow-400 font-medium">{weeklyAverage}</span>
           </div>
-          <div className="flex justify-between items-center py-2 border-b border-gray-700">
+          <div className="flex justify-between items-center py-2">
             <span className="text-gray-400">Monthly Avg:</span>
             <span className="text-orange-400 font-medium">{monthlyAverage}</span>
           </div>
-          <div className="flex justify-between items-center py-2 border-b border-gray-700">
+          <div className="flex justify-between items-center py-2">
             <span className="text-gray-400">Goal Status:</span>
             <span className="text-red-400 font-medium">
               {safeStats.totalContributions >= 365 ? '365+ Days!' : 

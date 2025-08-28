@@ -326,10 +326,6 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
                     selectedYear={selectedYear}
                   />
                 </div>
-                {/* Separator */}
-                {activeChart === 'all' && (
-                  <div className="mt-12 border-t border-gray-800/50"></div>
-                )}
               </div>
             )}
 
@@ -351,10 +347,6 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
                 <div id="stats-chart">
                   <StatsCard stats={data.stats} selectedYear={selectedYear} />
                 </div>
-                {/* Separator */}
-                {activeChart === 'all' && (
-                  <div className="mt-12 border-t border-gray-800/50"></div>
-                )}
               </div>
             )}
 
@@ -376,10 +368,6 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
                 <div id="timeline-chart">
                   <ContributionLineChart data={data.contributions} />
                 </div>
-                {/* Separator - only show if Languages section will appear */}
-                {activeChart === 'all' && (
-                  <div className="mt-12 border-t border-gray-800/50"></div>
-                )}
               </div>
             )}
           </div>

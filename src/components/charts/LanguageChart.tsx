@@ -2,11 +2,12 @@
 
 import React from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Pie, Bar } from 'react-chartjs-2';
 import { LanguageStats } from '@/types/github';
 
 // Register Chart.js components
-ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, ChartDataLabels);
 
 interface LanguageChartProps {
   data: LanguageStats;
@@ -98,6 +99,20 @@ export default function LanguageChart({ data, type = 'pie', className = '' }: La
               return `${label}: ${percentage}% (${value.toLocaleString()} bytes)`;
             }
           }
+        },
+        datalabels: {
+          color: '#ffffff',
+          font: {
+            weight: 'bold' as const,
+            size: 11
+          },
+          formatter: function(value: any, context: any) {
+            const percentage = (value / totalSize) * 100;
+            // Only show labels for segments that are large enough to fit text
+            return percentage > 8 ? context.chart.data.labels[context.dataIndex] : '';
+          },
+          textAlign: 'center' as const,
+          textBaseline: 'middle' as const
         }
       },
       elements: {
