@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import Image from 'next/image';
 import { GitHubAnalytics as GitHubAnalyticsType } from '@/types/github';
 import ContributionHeatmap from './charts/ContributionHeatmap';
@@ -23,21 +23,9 @@ export default function GitHubAnalytics({ username, onDataLoaded }: GitHubAnalyt
   const [activeChart, setActiveChart] = useState<ChartType>('all');
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
 
-  // Automatically fetch data when component mounts or username changes
-  React.useEffect(() => {
-    if (username) {
-      fetchAnalytics();
-    }
-  }, [username]);
 
-  // Refetch only contribution data when year changes
-  React.useEffect(() => {
-    if (username && data) {
-      fetchContributionsOnly(selectedYear);
-    }
-  }, [selectedYear]);
 
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = useCallback(async () => {
     if (!username.trim()) {
       setError('Please enter a GitHub username');
       return;
@@ -86,13 +74,13 @@ export default function GitHubAnalytics({ username, onDataLoaded }: GitHubAnalyt
     } finally {
       setLoading(false);
     }
-  };
+  }, [username, onDataLoaded]);
 
   const handleYearChange = (year: number) => {
     setSelectedYear(year);
   };
 
-  const fetchContributionsOnly = async (year: number) => {
+  const fetchContributionsOnly = useCallback(async (year: number) => {
     if (!username.trim()) return;
     
     try {
@@ -126,7 +114,7 @@ export default function GitHubAnalytics({ username, onDataLoaded }: GitHubAnalyt
       console.error('Contributions fetch error:', err);
       // Don't show error to user for year changes, just log it
     }
-  };
+  }, [username, onDataLoaded]);
 
 
 
@@ -157,6 +145,20 @@ export default function GitHubAnalytics({ username, onDataLoaded }: GitHubAnalyt
       </svg>
     ) },
   ];
+
+  // Automatically fetch data when component mounts or username changes
+  React.useEffect(() => {
+    if (username) {
+      fetchAnalytics();
+    }
+  }, [username, fetchAnalytics]);
+
+  // Refetch only contribution data when year changes
+  React.useEffect(() => {
+    if (username && data) {
+      fetchContributionsOnly(selectedYear);
+    }
+  }, [selectedYear, fetchContributionsOnly, username, data]);
 
   if (loading) {
     return (
