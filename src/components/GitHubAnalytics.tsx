@@ -8,6 +8,7 @@ import ContributionLineChart from './charts/ContributionLineChart';
 import LanguageChart from './charts/LanguageChart';
 import StatsCard from './charts/StatsCard';
 import ExportButton from './ExportButton';
+import ExportDropdown from './ExportDropdown';
 
 interface GitHubAnalyticsProps {
   username: string;
@@ -56,25 +57,7 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
     }
   };
 
-  const exportData = () => {
-    if (!data) return;
-    
-    const exportData = {
-      username: data.user.login,
-      exported_at: new Date().toISOString(),
-      analytics: data
-    };
-    
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `github-analytics-${data.user.login}-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
+
 
   const chartButtons = [
     { id: 'all' as ChartType, label: 'All Charts', icon: (
@@ -189,15 +172,7 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
               </span>
             </div>
           </div>
-          <button
-            onClick={exportData}
-            className="bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-white p-2 rounded-lg transition-colors flex items-center justify-center"
-            title="Export data as JSON"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-          </button>
+          <ExportDropdown data={data} />
         </div>
       </div>
 
