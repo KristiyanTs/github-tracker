@@ -452,14 +452,11 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
 
       {/* Footer Info */}
       <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 text-center">
-        <p className="text-gray-400 text-sm flex items-start gap-2">
-          <svg className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+        <p className="text-gray-400 text-sm flex items-center justify-center gap-2">
+          <svg className="w-4 h-4 text-green-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
           </svg>
-          <span>
-            Export as JSON to create custom visualizations or 
-            save charts as images for your CV by taking screenshots of individual sections.
-          </span>
+          <span>GitHub Activity Analytics</span>
         </p>
       </div>
     </div>
