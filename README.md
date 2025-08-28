@@ -1,36 +1,143 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🔥 GitHub Activity Tracker
 
-## Getting Started
+**Break the rules. Own your code. Show your hustle.**
 
-First, run the development server:
+A rebellious developer tool that transforms your GitHub contribution data into stunning visuals for your CV. No more boring tables or text descriptions - let your code speak with killer charts and analytics.
+
+## 🚀 What This Beast Does
+
+- **Fetch Real Data**: Connect with GitHub API to pull your actual contribution timeline
+- **Sick Visualizations**: Generate contribution heatmaps, commit frequency charts, and activity analytics
+- **Export Freedom**: Download as JSON for data nerds or save as high-quality images for your CV
+- **Multiple Chart Types**: Heatmaps, line charts, bar graphs, and streak analytics
+- **CV-Ready**: Perfectly sized exports optimized for resume inclusion
+- **Dark Mode First**: Because light mode is for quitters
+
+## 🎯 Features
+
+### Core Functionality
+- **GitHub Username Input**: Simple, clean interface to enter any GitHub username
+- **Real-Time Data Fetching**: Direct GitHub API integration (no fake data BS)
+- **Contribution Analysis**: 
+  - Daily commit counts
+  - Longest streaks
+  - Most active days/months
+  - Language breakdown
+  - Repository activity
+
+### Export Options
+- **JSON Export**: Raw data for developers who want to build their own visualizations
+- **PNG/SVG Images**: High-resolution charts perfect for CVs and portfolios
+- **Multiple Sizes**: Optimized dimensions for different CV layouts
+
+### Charts & Analytics
+- **Contribution Heatmap**: GitHub-style grid showing daily activity
+- **Commit Timeline**: Line charts showing activity over time
+- **Streak Analysis**: Visualize your longest coding streaks
+- **Language Stats**: Breakdown of your most-used programming languages
+- **Weekly Patterns**: Discover your most productive days
+
+## 🛠 Tech Stack
+
+- **Next.js 14**: React framework with App Router
+- **TypeScript**: Because type safety is rebellion against bugs
+- **Tailwind CSS**: Utility-first styling for rapid development
+- **Chart.js/Recharts**: Data visualization libraries
+- **GitHub API**: Official REST API for contribution data
+- **html2canvas**: For generating downloadable images
+- **Framer Motion**: Smooth animations and transitions
+
+## 🏃‍♂️ Quick Start
 
 ```bash
+# Clone the rebellion
+git clone https://github.com/your-username/github-activity-tracker.git
+cd github-activity-tracker
+
+# Install dependencies
+npm install
+
+# Start the development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Open http://localhost:3000 and start tracking
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📋 Environment Setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Create a `.env.local` file:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```env
+GITHUB_TOKEN=your_github_personal_access_token
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
 
-## Learn More
+> **Note**: GitHub token is optional but recommended to avoid rate limits. Create one at [GitHub Settings > Developer settings > Personal access tokens](https://github.com/settings/tokens)
 
-To learn more about Next.js, take a look at the following resources:
+## 🎨 Usage
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. **Enter Username**: Type any GitHub username in the input field
+2. **Fetch Data**: Click "Analyze Activity" to pull contribution data
+3. **Explore Charts**: View different visualization types
+4. **Export**: Download as JSON or save charts as images
+5. **Customize**: Adjust date ranges and chart types
+6. **Use in CV**: Add downloaded images to your resume
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🔧 API Endpoints
 
-## Deploy on Vercel
+```
+GET /api/github/[username]
+- Fetches user contribution data
+- Returns: contribution counts, streaks, repository info
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+GET /api/github/[username]/languages
+- Fetches language statistics
+- Returns: language breakdown with percentages
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+POST /api/export/image
+- Generates downloadable chart images
+- Body: chart configuration and data
+```
+
+## 🎯 Roadmap
+
+- [ ] **Advanced Analytics**: Repository stars, PRs, issues breakdown
+- [ ] **Team Analytics**: Compare multiple developers
+- [ ] **Custom Themes**: Additional color schemes and styles
+- [ ] **Integration APIs**: Direct export to portfolio sites
+- [ ] **Mobile App**: React Native version for on-the-go tracking
+- [ ] **PDF Reports**: Comprehensive activity reports
+
+## 🤝 Contributing
+
+This project thrives on rebellion against boring developer tools. Contributions welcome!
+
+1. Fork the repository
+2. Create your feature branch: `git checkout -b feature/badass-feature`
+3. Commit your changes: `git commit -m 'Add badass feature'`
+4. Push to the branch: `git push origin feature/badass-feature`
+5. Open a Pull Request
+
+## 📄 License
+
+MIT License - Use it, break it, rebuild it. Make it yours.
+
+## ⚡ Performance
+
+- **Fast API Calls**: Optimized GitHub API requests with caching
+- **Lazy Loading**: Charts load only when needed
+- **Responsive Design**: Works on all screen sizes
+- **Minimal Bundle**: Optimized build size under 500KB
+
+## 🐛 Known Issues
+
+- GitHub API rate limits may affect frequent usage (solved with authentication)
+- Large contribution histories may take longer to process
+- Some private repository data won't be accessible (GitHub API limitation)
+
+---
+
+**Built by developers, for developers. Because your code deserves to be seen.**
+
+🔗 [Live Demo](https://github-activity-tracker.vercel.app) | 📧 [Report Issues](https://github.com/your-username/github-activity-tracker/issues) | 🌟 [Star if you're badass](https://github.com/your-username/github-activity-tracker)
+# github-tracker
