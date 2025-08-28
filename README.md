@@ -8,9 +8,9 @@ A rebellious developer tool that transforms your GitHub contribution data into s
 
 - **Fetch Real Data**: Connect with GitHub API to pull your actual contribution timeline
 - **Sick Visualizations**: Generate contribution heatmaps, commit frequency charts, and activity analytics
-- **Export Freedom**: Download as JSON for data nerds or save as high-quality images for your CV
+- **Export Freedom**: Download as JSON for data nerds
 - **Multiple Chart Types**: Heatmaps, line charts, bar graphs, and streak analytics
-- **CV-Ready**: Perfectly sized exports optimized for resume inclusion
+- **CV-Ready**: Export data for your resume
 - **Dark Mode First**: Because light mode is for quitters
 
 ## 🎯 Features
@@ -91,9 +91,9 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 1. **Enter Username**: Type any GitHub username in the input field
 2. **Fetch Data**: Click "Analyze Activity" to pull contribution data
 3. **Explore Charts**: View different visualization types
-4. **Export**: Download as JSON or save charts as images
+4. **Export**: Download as JSON
 5. **Customize**: Adjust date ranges and chart types
-6. **Use in CV**: Add downloaded images to your resume
+6. **Use in CV**: Add exported data to your resume
 
 ## 🔧 API Endpoints
 
@@ -105,10 +105,6 @@ GET /api/github/[username]
 GET /api/github/[username]/languages
 - Fetches language statistics
 - Returns: language breakdown with percentages
-
-POST /api/export/image
-- Generates downloadable chart images
-- Body: chart configuration and data
 ```
 
 ## 🎯 Roadmap

@@ -88,15 +88,4 @@ export interface GitHubAnalytics {
   achievements?: GitHubProfileAchievements;
 }
 
-export interface ExportOptions {
-  format: 'json' | 'png' | 'svg';
-  chartType: 'heatmap' | 'line' | 'bar' | 'stats';
-  dateRange?: {
-    start: string;
-    end: string;
-  };
-  dimensions?: {
-    width: number;
-    height: number;
-  };
-}
+

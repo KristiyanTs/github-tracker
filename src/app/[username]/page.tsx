@@ -1,9 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import GitHubAnalytics from '@/components/GitHubAnalytics';
 import ClientOnly from '@/components/ClientOnly';
+import ExportDropdown from '@/components/ExportDropdown';
+import { GitHubAnalytics as GitHubAnalyticsType } from '@/types/github';
 
 interface UserPageProps {
   params: Promise<{ username: string }>;
@@ -11,6 +13,8 @@ interface UserPageProps {
 
 export default function UserPage({ params }: UserPageProps) {
   const [username, setUsername] = React.useState<string>('');
+  const [analyticsData, setAnalyticsData] = useState<GitHubAnalyticsType | null>(null);
+  const [showShareSuccess, setShowShareSuccess] = useState(false);
 
   React.useEffect(() => {
     params.then(({ username }) => {
@@ -41,23 +45,52 @@ export default function UserPage({ params }: UserPageProps) {
               <h1 className="text-xl font-semibold text-white">GitHub Activity</h1>
             </Link>
             <div className="flex items-center gap-4">
-              <span className="text-gray-400 text-sm">@{username}</span>
+              {/* Action Buttons - Only show when data is available */}
+              {analyticsData && (
+                <>
+                  {/* Share Button */}
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(window.location.href);
+                      setShowShareSuccess(true);
+                      setTimeout(() => setShowShareSuccess(false), 2000);
+                    }}
+                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-white rounded-lg transition-colors text-sm"
+                    title="Copy current URL to clipboard"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                    </svg>
+                    {showShareSuccess ? 'Copied!' : 'Share'}
+                  </button>
+                  
+                  {/* Export Dropdown */}
+                  <ExportDropdown data={analyticsData} />
+                </>
+              )}
+              
               <Link
                 href="/"
-                className="bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-lg transition-colors text-sm"
+                className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-white rounded-lg transition-colors text-sm"
               >
-                New
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                <span>New</span>
               </Link>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-6 py-8">
-        <ClientOnly key={username}>
-          <GitHubAnalytics username={username} />
-        </ClientOnly>
-      </main>
+              <main className="max-w-4xl mx-auto px-6 py-8">
+          <ClientOnly key={username}>
+            <GitHubAnalytics 
+              username={username} 
+              onDataLoaded={setAnalyticsData}
+            />
+          </ClientOnly>
+        </main>
 
       {/* Footer */}
       <footer className="border-t border-gray-800/50 py-8 mt-20">

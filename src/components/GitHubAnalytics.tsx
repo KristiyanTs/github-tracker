@@ -5,20 +5,18 @@ import Image from 'next/image';
 import { GitHubAnalytics as GitHubAnalyticsType } from '@/types/github';
 import ContributionHeatmap from './charts/ContributionHeatmap';
 import ContributionLineChart from './charts/ContributionLineChart';
-// @ts-expect-error - LanguageChart is not used in this file
 import LanguageChart from './charts/LanguageChart';
 import StatsCard from './charts/StatsCard';
-import ExportButton from './ExportButton';
-import ExportDropdown from './ExportDropdown';
 import { calculateActivityStats } from '@/lib/github-api';
 
 interface GitHubAnalyticsProps {
   username: string;
+  onDataLoaded?: (data: GitHubAnalyticsType) => void;
 }
 
 type ChartType = 'heatmap' | 'line' | 'languages' | 'stats' | 'all';
 
-export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
+export default function GitHubAnalytics({ username, onDataLoaded }: GitHubAnalyticsProps) {
   const [data, setData] = useState<GitHubAnalyticsType | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -58,6 +56,11 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
       
       const analytics = await response.json();
       setData(analytics);
+      
+      // Notify parent component that data is loaded
+      if (onDataLoaded) {
+        onDataLoaded(analytics);
+      }
     } catch (err: unknown) {
       console.error('Analytics fetch error:', err);
       
@@ -106,11 +109,18 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
       // Update only the contributions data, keeping everything else the same
       setData(prevData => {
         if (!prevData) return prevData;
-        return {
+        const updatedData = {
           ...prevData,
           contributions: newContributions,
           stats: calculateActivityStats(newContributions, year)
         };
+        
+        // Notify parent component that data is updated
+        if (onDataLoaded) {
+          onDataLoaded(updatedData);
+        }
+        
+        return updatedData;
       });
     } catch (err: unknown) {
       console.error('Contributions fetch error:', err);
@@ -255,10 +265,9 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
                 </svg>
                 Joined {new Date(data.user.created_at).getFullYear()}
               </span>
+                          </div>
             </div>
           </div>
-          <ExportDropdown data={data} />
-        </div>
 
         {/* Profile Achievements */}
         {data.achievements && (
@@ -363,17 +372,9 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
             {/* Contribution Heatmap */}
             {(activeChart === 'all' || activeChart === 'heatmap') && (
               <div className="py-4">
-                <div className="mb-6 flex items-center justify-between">
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-2">Contribution Heatmap</h3>
-                    <p className="text-gray-400 text-sm">Daily contribution activity visualization</p>
-                  </div>
-                  <ExportButton 
-                    targetId="heatmap-chart" 
-                    filename={`github-heatmap-${data.user.login}`}
-                    minimal={true}
-                    tooltip="Save heatmap image"
-                  />
+                <div className="mb-6">
+                  <h3 className="text-xl font-bold text-white mb-2">Contribution Heatmap</h3>
+                  <p className="text-gray-400 text-sm">Daily contribution activity visualization</p>
                 </div>
                 <div id="heatmap-chart">
                   <ContributionHeatmap 
@@ -387,17 +388,9 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
             {/* Activity Statistics */}
             {(activeChart === 'all' || activeChart === 'stats') && (
               <div className="py-4">
-                <div className="flex justify-between items-center mb-6">
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-2">Activity Statistics</h3>
-                    <p className="text-gray-400 text-sm">GitHub activity metrics and patterns</p>
-                  </div>
-                  <ExportButton 
-                    targetId="stats-chart" 
-                    filename={`github-stats-${data.user.login}`}
-                    minimal={true}
-                    tooltip="Save stats as image"
-                  />
+                <div className="mb-6">
+                  <h3 className="text-xl font-bold text-white mb-2">Activity Statistics</h3>
+                  <p className="text-gray-400 text-sm">GitHub activity metrics and patterns</p>
                 </div>
                 <div id="stats-chart">
                   <StatsCard stats={data.stats} selectedYear={selectedYear} />
@@ -408,17 +401,9 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
             {/* Contribution Timeline */}
             {(activeChart === 'all' || activeChart === 'line') && (
               <div className="py-4">
-                <div className="flex justify-between items-center mb-6">
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-2">Contribution Timeline</h3>
-                    <p className="text-gray-400 text-sm">Activity patterns over time</p>
-                  </div>
-                  <ExportButton 
-                    targetId="timeline-chart" 
-                    filename={`github-timeline-${data.user.login}`}
-                    minimal={true}
-                    tooltip="Save timeline as image"
-                  />
+                <div className="mb-6">
+                  <h3 className="text-xl font-bold text-white mb-2">Contribution Timeline</h3>
+                  <p className="text-gray-400 text-sm">Activity patterns over time</p>
                 </div>
                 <div id="timeline-chart">
                   <ContributionLineChart data={data.contributions} />
@@ -428,20 +413,12 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
           </div>
         )}
 
-        {/* Languages Chart - Separate since it's not affected by year */}
+                {/* Languages Chart - Separate since it's not affected by year */}
         {(activeChart === 'all' || activeChart === 'languages') && (
           <div className="py-4">
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <h3 className="text-xl font-bold text-white mb-2">Programming Languages</h3>
-                                    <p className="text-gray-400 text-sm">Most used languages and technologies</p>
-              </div>
-              <ExportButton 
-                targetId="languages-chart" 
-                filename={`github-languages-${data.user.login}`}
-                minimal={true}
-                tooltip="Save languages chart as image"
-              />
+            <div className="mb-6">
+              <h3 className="text-xl font-bold text-white mb-2">Programming Languages</h3>
+              <p className="text-gray-400 text-sm">Most used languages and technologies</p>
             </div>
             <div id="languages-chart">
               <LanguageChart data={data.languages} type="pie" />
