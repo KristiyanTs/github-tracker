@@ -94,11 +94,11 @@ export default function ContributionLineChart({ data, className = '' }: Contribu
           },
           ticks: {
             color: '#9ca3af',
-            maxTicksLimit: 8,
+            maxTicksLimit: 16,
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             callback: function(value: any, index: number) {
-              // Show every 4th label to avoid crowding
-              return index % 4 === 0 ? chartData[index]?.label : '';
+              // Show every 2nd label for more dates while avoiding crowding
+              return index % 2 === 0 ? chartData[index]?.label : '';
             }
           }
         },
