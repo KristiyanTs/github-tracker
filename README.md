@@ -72,7 +72,19 @@ GITHUB_TOKEN=your_github_personal_access_token
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
-> **Note**: GitHub token is optional but recommended to avoid rate limits. Create one at [GitHub Settings > Developer settings > Personal access tokens](https://github.com/settings/tokens)
+### 🔑 GitHub Token Setup (Required for Real Data)
+
+**CRITICAL**: A GitHub Personal Access Token is **REQUIRED** to fetch real contribution data. Without it, the app will show "data unavailable" messages.
+
+1. Go to [GitHub Settings > Developer settings > Personal access tokens](https://github.com/settings/tokens)
+2. Click "Generate new token (classic)"
+3. Select the following scopes:
+   - `read:user` - Read user profile data
+   - `repo` - Access to public and private repositories (for contribution data)
+4. Copy the generated token
+5. Add it to your `.env.local` file as `GITHUB_TOKEN=your_token_here`
+
+> **Why do we need this?** GitHub's contribution graph data is only available through their GraphQL API, which requires authentication. The REST API doesn't provide this data.
 
 ## 🎨 Usage
 

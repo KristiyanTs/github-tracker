@@ -72,83 +72,163 @@ export async function fetchLanguageStats(username: string): Promise<LanguageStat
   const repositories = await fetchUserRepositories(username);
   const languageStats: LanguageStats = {};
   
-  for (const repo of repositories) {
-    if (repo.language) {
-      languageStats[repo.language] = (languageStats[repo.language] || 0) + repo.size;
+  // Fetch detailed language stats for each repository (up to top 20 most recent)
+  const topRepos = repositories
+    .filter(repo => !repo.full_name.includes('.github.io') && !repo.language?.toLowerCase().includes('html')) // Filter out likely documentation repos
+    .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+    .slice(0, 20); // Limit to avoid rate limits
+  
+  const languagePromises = topRepos.map(async (repo) => {
+    try {
+      const response = await fetch(`${GITHUB_API_BASE}/repos/${repo.full_name}/languages`, {
+        headers: getAuthHeaders(),
+      });
+      
+      if (response.ok) {
+        const repoLanguages = await response.json();
+        return { repo: repo.name, languages: repoLanguages };
+      }
+    } catch (error) {
+      console.warn(`Failed to fetch languages for ${repo.full_name}:`, error);
+    }
+    
+    // Fallback to basic repository language if API call fails
+    return repo.language ? { repo: repo.name, languages: { [repo.language]: repo.size } } : null;
+  });
+
+  const results = await Promise.all(languagePromises);
+  
+  // Aggregate language stats across all repositories
+  for (const result of results) {
+    if (result?.languages) {
+      for (const [language, bytes] of Object.entries(result.languages)) {
+        if (typeof bytes === 'number') {
+          languageStats[language] = (languageStats[language] || 0) + bytes;
+        }
+      }
     }
   }
 
   return languageStats;
 }
 
-// Generate contribution data from GitHub's contribution graph
-// Note: This is a simplified version. For real contribution data, you'd need to scrape
-// GitHub's contribution graph or use their GraphQL API
+// Fetch real contribution data from GitHub's GraphQL API
 export async function fetchContributions(username: string, year?: number): Promise<ContributionData> {
   const user = await fetchGitHubUser(username);
   
-  // This is a mock implementation since GitHub's REST API doesn't provide contribution data
-  // In a real implementation, you'd use GitHub's GraphQL API or scrape the contributions page
-  const weeks = generateMockContributions(year);
-  const totalContributions = weeks.reduce((total, week) => 
-    total + week.contributionDays.reduce((weekTotal, day) => weekTotal + day.count, 0), 0
-  );
-
-  return {
-    user,
-    weeks,
-    totalContributions
-  };
+  try {
+    const contributions = await fetchRealContributions(username, year);
+    return {
+      user,
+      ...contributions
+    };
+  } catch (error) {
+    console.error('Failed to fetch real contribution data:', error);
+    
+    // Following user preference: don't use fake data, show that data is unavailable
+    throw new GitHubAPIError(
+      'GitHub contribution data is currently unavailable. This may be due to API limitations or missing authentication.',
+      503
+    );
+  }
 }
 
-function generateMockContributions(year?: number) {
-  const weeks = [];
-  const targetYear = year || new Date().getFullYear();
+// Fetch real contribution data using GitHub's GraphQL API
+async function fetchRealContributions(username: string, year?: number): Promise<{ weeks: any[], totalContributions: number }> {
+  const token = process.env.GITHUB_TOKEN;
   
-  // Find the first Sunday of the year (or start of the first week)
-  const firstDayOfYear = new Date(targetYear, 0, 1);
-  const firstSunday = new Date(firstDayOfYear);
-  const dayOfWeek = firstDayOfYear.getDay();
-  firstSunday.setDate(firstDayOfYear.getDate() - dayOfWeek);
-  
-  // Generate weeks starting from the first Sunday
-  let currentDate = new Date(firstSunday);
-  let weekCount = 0;
-  
-  while (weekCount < 53 && (currentDate.getFullYear() === targetYear || weekCount < 52)) {
-    const contributionDays = [];
-    
-    for (let day = 0; day < 7; day++) {
-      const date = new Date(currentDate);
-      date.setDate(currentDate.getDate() + day);
-      
-      // Generate random contribution count with realistic patterns
-      const isWeekend = day === 0 || day === 6;
-      const baseChance = isWeekend ? 0.3 : 0.7;
-      const hasContribution = Math.random() < baseChance;
-      const count = hasContribution ? Math.floor(Math.random() * 15) + 1 : 0;
-      
-      let level: 0 | 1 | 2 | 3 | 4 = 0;
-      if (count > 0) {
-        if (count <= 3) level = 1;
-        else if (count <= 6) level = 2;
-        else if (count <= 10) level = 3;
-        else level = 4;
-      }
-
-      contributionDays.push({
-        date: date.toISOString().split('T')[0],
-        count,
-        level
-      });
-    }
-    
-    weeks.push({ contributionDays });
-    currentDate.setDate(currentDate.getDate() + 7);
-    weekCount++;
+  if (!token) {
+    throw new GitHubAPIError('GitHub token is required for contribution data. Please set GITHUB_TOKEN environment variable.');
   }
+
+  const targetYear = year || new Date().getFullYear();
+  const fromDate = `${targetYear}-01-01T00:00:00Z`;
+  const toDate = `${targetYear}-12-31T23:59:59Z`;
+
+  const query = `
+    query($username: String!, $from: DateTime!, $to: DateTime!) {
+      user(login: $username) {
+        contributionsCollection(from: $from, to: $to) {
+          contributionCalendar {
+            totalContributions
+            weeks {
+              contributionDays {
+                date
+                contributionCount
+                contributionLevel
+              }
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  const variables = {
+    username,
+    from: fromDate,
+    to: toDate
+  };
+
+  const response = await fetch('https://api.github.com/graphql', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      'User-Agent': 'GitHub-Activity-Tracker'
+    },
+    body: JSON.stringify({ query, variables })
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new GitHubAPIError('GitHub token is invalid or expired. Please check your GITHUB_TOKEN.', 401);
+    }
+    if (response.status === 403) {
+      throw new GitHubAPIError('GitHub API rate limit exceeded or insufficient permissions.', 403);
+    }
+    throw new GitHubAPIError(`GitHub GraphQL API error: ${response.statusText}`, response.status);
+  }
+
+  const data = await response.json();
+
+  if (data.errors) {
+    console.error('GraphQL errors:', data.errors);
+    throw new GitHubAPIError(`GraphQL error: ${data.errors[0]?.message || 'Unknown error'}`);
+  }
+
+  if (!data.data?.user) {
+    throw new GitHubAPIError(`User '${username}' not found`, 404);
+  }
+
+  const contributionCalendar = data.data.user.contributionsCollection.contributionCalendar;
   
-  return weeks;
+  // Transform GitHub's GraphQL response to match our expected format
+  const weeks = contributionCalendar.weeks.map((week: any) => ({
+    contributionDays: week.contributionDays.map((day: any) => {
+      // Convert GitHub's string levels to numbers
+      let level: 0 | 1 | 2 | 3 | 4 = 0;
+      switch (day.contributionLevel) {
+        case 'NONE': level = 0; break;
+        case 'FIRST_QUARTILE': level = 1; break;
+        case 'SECOND_QUARTILE': level = 2; break;
+        case 'THIRD_QUARTILE': level = 3; break;
+        case 'FOURTH_QUARTILE': level = 4; break;
+        default: level = 0;
+      }
+      
+      return {
+        date: day.date,
+        count: day.contributionCount,
+        level
+      };
+    })
+  }));
+
+  return {
+    weeks,
+    totalContributions: contributionCalendar.totalContributions
+  };
 }
 
 export function calculateActivityStats(contributionData: ContributionData): ActivityStats {

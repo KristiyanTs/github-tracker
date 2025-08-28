@@ -140,18 +140,42 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
   }
 
   if (error) {
+    // Check if this is a contribution data unavailable error
+    const isContributionError = error.includes('contribution data is currently unavailable') || 
+                               error.includes('GitHub token is required') ||
+                               error.includes('API limitations');
+    
     return (
-      <div className="bg-red-900/20 border border-red-500/50 rounded-lg p-6 text-center">
-        <div className="text-red-400 mb-4">
-          <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z" />
-          </svg>
+      <div className={`${isContributionError ? 'bg-yellow-900/20 border-yellow-500/50' : 'bg-red-900/20 border-red-500/50'} border rounded-lg p-6 text-center`}>
+        <div className={`${isContributionError ? 'text-yellow-400' : 'text-red-400'} mb-4`}>
+          {isContributionError ? (
+            <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          ) : (
+            <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          )}
         </div>
-        <h3 className="text-xl font-bold text-red-400 mb-2">Unable to fetch data</h3>
+        <h3 className={`text-xl font-bold ${isContributionError ? 'text-yellow-400' : 'text-red-400'} mb-2`}>
+          {isContributionError ? 'Data Currently Unavailable' : 'Unable to fetch data'}
+        </h3>
         <p className="text-gray-300 mb-4">{error}</p>
+        {isContributionError && (
+          <div className="bg-gray-800/50 rounded-lg p-4 mb-4 text-left">
+            <h4 className="text-sm font-semibold text-yellow-400 mb-2">💡 To get real contribution data:</h4>
+            <ol className="text-sm text-gray-300 space-y-1 list-decimal list-inside">
+              <li>Create a GitHub Personal Access Token</li>
+              <li>Add it to your <code className="bg-gray-700 px-1 rounded">.env.local</code> as <code className="bg-gray-700 px-1 rounded">GITHUB_TOKEN</code></li>
+              <li>Restart your development server</li>
+            </ol>
+            <p className="text-xs text-gray-400 mt-2">See README.md for detailed setup instructions</p>
+          </div>
+        )}
         <button
           onClick={fetchAnalytics}
-          className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg transition-colors"
+          className={`${isContributionError ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-red-600 hover:bg-red-700'} text-white px-6 py-2 rounded-lg transition-colors`}
         >
           Try Again
         </button>

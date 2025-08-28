@@ -51,6 +51,13 @@ export async function GET(
           { status: 429 }
         );
       }
+      
+      if (statusError.status === 503) {
+        return NextResponse.json(
+          { error: statusError.message },
+          { status: 503 }
+        );
+      }
     }
     
     return NextResponse.json(
