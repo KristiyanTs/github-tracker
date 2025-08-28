@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { GitHubAnalytics as GitHubAnalyticsType } from '@/types/github';
 import ContributionHeatmap from './charts/ContributionHeatmap';
 import ContributionLineChart from './charts/ContributionLineChart';
+// @ts-expect-error - LanguageChart is not used in this file
 import LanguageChart from './charts/LanguageChart';
 import StatsCard from './charts/StatsCard';
 import { calculateActivityStats } from '@/lib/github-api';

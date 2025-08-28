@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function Home() {
   const [username, setUsername] = useState('');
   const [isClient, setIsClient] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -15,62 +16,88 @@ export default function Home() {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     setIsClient(true);
+    
+    // Typing animation effect
+    const timer = setTimeout(() => setIsTyping(true), 500);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen bg-black relative overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-green-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/4 w-2 h-2 bg-green-400 rounded-full animate-ping"></div>
+        <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-emerald-400 rounded-full animate-ping delay-500"></div>
+      </div>
+
       {/* Minimal Header */}
-      <header className="border-b border-gray-800/50 bg-gray-900/95 backdrop-blur-sm">
-        <div className="max-w-4xl mx-auto px-6 py-4">
+      <header className="relative z-10 border-b border-white/10 bg-black/80 backdrop-blur-xl">
+        <div className="max-w-6xl mx-auto px-6 py-6">
           <div className="flex items-center justify-center">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-emerald-500 rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <div className="flex items-center gap-3 group cursor-pointer">
+              <div className="w-10 h-10 bg-gradient-to-r from-green-400 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/25 transition-all duration-300 group-hover:scale-110 group-hover:shadow-green-500/40">
+                <svg className="w-6 h-6 text-black" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                 </svg>
               </div>
-              <h1 className="text-xl font-semibold text-white">GitHub Activity</h1>
+              <h1 className="text-2xl font-bold text-white tracking-tight">GitHub Activity</h1>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-6">
+      <main className="relative z-10 max-w-6xl mx-auto px-6">
         {!isClient ? (
           <div className="flex items-center justify-center py-32">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-400"></div>
           </div>
         ) : (
-          <div className="py-24">
+          <div className="py-32">
             {/* Hero Section */}
-            <div className="text-center mb-20">
-              <h2 className="text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight">
-                Transform<br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-500">
-                  GitHub Activity
-                </span>
-              </h2>
-              <p className="text-xl text-gray-400 mb-12 max-w-2xl mx-auto leading-relaxed">
+            <div className="text-center mb-32">
+              <div className="mb-8">
+                <h2 className="text-6xl md:text-8xl font-black text-white mb-6 tracking-tight leading-none">
+                  <span className={`inline-block transition-all duration-1000 ${isTyping ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+                    Transform
+                  </span>
+                  <br />
+                  <span className={`inline-block transition-all duration-1000 delay-300 ${isTyping ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-emerald-400 to-green-500">
+                      GitHub
+                    </span>
+                  </span>
+                  <br />
+                  <span className={`inline-block transition-all duration-1000 delay-600 ${isTyping ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-green-400">
+                      Activity
+                    </span>
+                  </span>
+                </h2>
+              </div>
+              
+              <p className={`text-xl text-gray-300 mb-16 max-w-3xl mx-auto leading-relaxed transition-all duration-1000 delay-900 ${isTyping ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
                 Generate stunning contribution visualizations and analytics 
                 that showcase coding journeys like never before.
               </p>
 
               {/* Search Form */}
-              <form onSubmit={handleSubmit} className="max-w-lg mx-auto mb-20">
-                <div className="relative">
+              <form onSubmit={handleSubmit} className={`max-w-xl mx-auto mb-24 transition-all duration-1000 delay-1200 ${isTyping ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+                <div className="relative group">
                   <input
                     type="text"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder="Enter GitHub username"
-                    className="w-full px-6 py-4 bg-gray-800/50 border border-gray-700/50 rounded-2xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500/50 transition-all text-lg"
+                    className="w-full px-8 py-6 bg-white/5 border border-white/10 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500/50 transition-all text-lg backdrop-blur-sm group-hover:border-white/20"
                     required
                   />
                   <button
                     type="submit"
-                    className="absolute right-2 top-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-8 py-2 rounded-xl font-medium transition-all hover:shadow-lg hover:shadow-green-500/25 text-lg"
+                    className="absolute right-2 top-2 bg-gradient-to-r from-green-500 to-emerald-600 text-black px-8 py-4 rounded-xl font-bold transition-all hover:shadow-lg hover:shadow-green-500/25 hover:scale-105 active:scale-95 text-lg"
                   >
                     Analyze
                   </button>
@@ -78,61 +105,61 @@ export default function Home() {
               </form>
             </div>
 
-            {/* Features - Minimal Grid */}
-            <div className="grid md:grid-cols-3 gap-8 mb-20">
+            {/* Features - Minimal Grid with Hover Effects */}
+            <div className={`grid md:grid-cols-3 gap-12 mb-32 transition-all duration-1000 delay-1500 ${isTyping ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
               <div className="text-center group">
-                <div className="w-12 h-12 bg-gray-800/50 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-gray-800 transition-colors">
-                  <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-all duration-300 border border-white/10 group-hover:border-green-500/30">
+                  <svg className="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">Beautiful Charts</h3>
-                <p className="text-gray-400 text-sm">
+                <h3 className="text-xl font-bold text-white mb-3">Beautiful Charts</h3>
+                <p className="text-gray-400 text-base leading-relaxed">
                   Heatmaps, timelines, and language breakdowns that make profiles shine
                 </p>
               </div>
 
               <div className="text-center group">
-                <div className="w-12 h-12 bg-gray-800/50 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-gray-800 transition-colors">
-                  <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500/20 to-green-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-all duration-300 border border-white/10 group-hover:border-emerald-500/30">
+                  <svg className="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">Export Ready</h3>
-                <p className="text-gray-400 text-sm">
+                <h3 className="text-xl font-bold text-white mb-3">Export Ready</h3>
+                <p className="text-gray-400 text-base leading-relaxed">
                   Download charts and data perfect for CVs and portfolios
                 </p>
               </div>
 
               <div className="text-center group">
-                <div className="w-12 h-12 bg-gray-800/50 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-gray-800 transition-colors">
-                  <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-all duration-300 border border-white/10 group-hover:border-green-500/30">
+                  <svg className="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">Real Data</h3>
-                <p className="text-gray-400 text-sm">
+                <h3 className="text-xl font-bold text-white mb-3">Real Data</h3>
+                <p className="text-gray-400 text-base leading-relaxed">
                   Direct GitHub API integration with authentic metrics
                 </p>
               </div>
             </div>
 
-            {/* Minimal CTA */}
-            <div className="text-center bg-gradient-to-r from-gray-800/30 to-gray-800/10 border border-gray-700/30 rounded-3xl p-12">
-              <h3 className="text-2xl font-semibold text-white mb-4">
+            {/* Minimal CTA with enhanced styling */}
+            <div className={`text-center bg-gradient-to-r from-white/5 to-white/10 border border-white/10 rounded-3xl p-16 backdrop-blur-sm transition-all duration-1000 delay-1800 ${isTyping ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+              <h3 className="text-3xl font-bold text-white mb-6">
                 Ready to elevate developer profiles?
               </h3>
-              <div className="flex items-center justify-center gap-8 text-sm text-gray-400">
-                <span className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+              <div className="flex items-center justify-center gap-12 text-base text-gray-300">
+                <span className="flex items-center gap-3 group">
+                  <div className="w-3 h-3 bg-green-400 rounded-full group-hover:scale-125 transition-transform"></div>
                   Free forever
                 </span>
-                <span className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                <span className="flex items-center gap-3 group">
+                  <div className="w-3 h-3 bg-emerald-400 rounded-full group-hover:scale-125 transition-transform"></div>
                   No registration
                 </span>
-                <span className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                <span className="flex items-center gap-3 group">
+                  <div className="w-3 h-3 bg-green-400 rounded-full group-hover:scale-125 transition-transform"></div>
                   Instant results
                 </span>
               </div>
@@ -142,9 +169,9 @@ export default function Home() {
       </main>
 
       {/* Minimal Footer */}
-      <footer className="border-t border-gray-800/50 py-8 mt-20">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <p className="text-gray-500 text-sm">
+      <footer className="relative z-10 border-t border-white/10 py-12 mt-32">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <p className="text-gray-400 text-sm">
             Built with Next.js • Open Source • Real GitHub API
           </p>
         </div>
