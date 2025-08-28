@@ -8,7 +8,7 @@ A rebellious developer tool that transforms your GitHub contribution data into s
 
 Ready to deploy this beast? Click the button and show the world your code hustle:
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yourusername/github-activity&env=GITHUB_TOKEN&envDescription=GitHub%20Personal%20Access%20Token%20with%20read:user%20and%20repo%20scopes&envLink=https://github.com/settings/tokens)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/kristiyants/github-activity&env=GITHUB_TOKEN&envDescription=GitHub%20Personal%20Access%20Token%20with%20read:user%20and%20repo%20scopes&envLink=https://github.com/settings/tokens)
 
 > **Pro Tip**: You'll need a GitHub Personal Access Token. Get yours [here](https://github.com/settings/tokens) with `read:user` and `repo` scopes.
 

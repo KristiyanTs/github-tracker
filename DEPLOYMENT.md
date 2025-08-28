@@ -12,13 +12,13 @@
 
 ### Option 1: One-Click Deploy
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yourusername/github-activity)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/kristiyants/github-activity)
 
 ### Option 2: Manual Deployment
 
 1. **Fork/Clone this repository**
    ```bash
-   git clone https://github.com/yourusername/github-activity.git
+   git clone https://github.com/kristiyants/github-activity.git
    cd github-activity
    ```
 
