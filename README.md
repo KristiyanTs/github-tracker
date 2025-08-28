@@ -51,8 +51,8 @@ A rebellious developer tool that transforms your GitHub contribution data into s
 
 ```bash
 # Clone the rebellion
-git clone https://github.com/your-username/github-activity-tracker.git
-cd github-activity-tracker
+git clone https://github.com/KristiyanTs/github-tracker.git
+cd github-tracker
 
 # Install dependencies
 npm install
@@ -147,5 +147,4 @@ MIT License - Use it, break it, rebuild it. Make it yours.
 
 **Built by developers, for developers. Because your code deserves to be seen.**
 
-🔗 [Live Demo](https://github-activity-tracker.vercel.app) | 📧 [Report Issues](https://github.com/your-username/github-activity-tracker/issues) | 🌟 [Star if you're badass](https://github.com/your-username/github-activity-tracker)
-# github-tracker
+🔗 [Live Demo](https://github-tracker.vercel.app) | 📧 [Report Issues](https://github.com/KristiyanTs/github-tracker/issues) | 🌟 [Star if you're badass](https://github.com/KristiyanTs/github-tracker)
