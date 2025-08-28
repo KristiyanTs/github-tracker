@@ -23,20 +23,16 @@ export default function Home() {
     <div className="min-h-screen bg-gray-900">
       {/* Minimal Header */}
       <header className="border-b border-gray-800/50 bg-gray-900/95 backdrop-blur-sm">
-        <div className="max-w-4xl mx-auto px-6 py-6">
-          <div className="flex items-center justify-between">
+        <div className="max-w-4xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-center">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-emerald-500 rounded-lg flex items-center justify-center">
                 <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                 </svg>
               </div>
-              <div>
-                <h1 className="text-xl font-semibold text-white">GitHub Activity</h1>
-                <p className="text-sm text-gray-400">Break the rules. Own your code.</p>
-              </div>
+              <h1 className="text-xl font-semibold text-white">GitHub Activity</h1>
             </div>
-
           </div>
         </div>
       </header>

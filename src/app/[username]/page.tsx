@@ -30,7 +30,7 @@ export default function UserPage({ params }: UserPageProps) {
     <div className="min-h-screen bg-gray-900">
       {/* Header */}
       <header className="border-b border-gray-800/50 bg-gray-900/95 backdrop-blur-sm">
-        <div className="max-w-4xl mx-auto px-6 py-6">
+        <div className="max-w-4xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
               <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-emerald-500 rounded-lg flex items-center justify-center">
@@ -38,18 +38,15 @@ export default function UserPage({ params }: UserPageProps) {
                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                 </svg>
               </div>
-              <div>
-                <h1 className="text-xl font-semibold text-white">GitHub Activity</h1>
-                <p className="text-sm text-gray-400">Break the rules. Own your code.</p>
-              </div>
+              <h1 className="text-xl font-semibold text-white">GitHub Activity</h1>
             </Link>
             <div className="flex items-center gap-4">
-              <span className="text-gray-400 text-sm">Analyzing: <span className="text-green-400 font-medium">@{username}</span></span>
+              <span className="text-gray-400 text-sm">@{username}</span>
               <Link
                 href="/"
-                className="bg-gray-800 hover:bg-gray-700 text-gray-300 px-4 py-2 rounded-lg transition-colors text-sm"
+                className="bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-lg transition-colors text-sm"
               >
-                New Analysis
+                New
               </Link>
             </div>
           </div>
