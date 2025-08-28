@@ -4,6 +4,14 @@
 
 A rebellious developer tool that transforms your GitHub contribution data into stunning visuals for your CV. No more boring tables or text descriptions - let your code speak with killer charts and analytics.
 
+## 🚀 Deploy Your Own Activity Tracker
+
+Ready to deploy this beast? Click the button and show the world your code hustle:
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yourusername/github-activity&env=GITHUB_TOKEN&envDescription=GitHub%20Personal%20Access%20Token%20with%20read:user%20and%20repo%20scopes&envLink=https://github.com/settings/tokens)
+
+> **Pro Tip**: You'll need a GitHub Personal Access Token. Get yours [here](https://github.com/settings/tokens) with `read:user` and `repo` scopes.
+
 ![GitHub Activity Tracker Demo](public/demo.png)
 
 ## 🚀 What This Beast Does
