@@ -1,4 +1,4 @@
-import { GitHubUser, Repository, LanguageStats, ContributionData, ActivityStats, GitHubAnalytics } from '@/types/github';
+import { GitHubUser, Repository, LanguageStats, ContributionData, ActivityStats, GitHubAnalytics, ContributionWeek } from '@/types/github';
 
 const GITHUB_API_BASE = 'https://api.github.com';
 
@@ -133,8 +133,20 @@ export async function fetchContributions(username: string, year?: number): Promi
   }
 }
 
+// GitHub GraphQL API types
+interface GitHubContributionDay {
+  date: string;
+  contributionCount: number;
+  contributionLevel: 'NONE' | 'FIRST_QUARTILE' | 'SECOND_QUARTILE' | 'THIRD_QUARTILE' | 'FOURTH_QUARTILE';
+}
+
+interface GitHubContributionWeek {
+  contributionDays: GitHubContributionDay[];
+}
+
+
 // Fetch real contribution data using GitHub's GraphQL API
-async function fetchRealContributions(username: string, year?: number): Promise<{ weeks: any[], totalContributions: number }> {
+async function fetchRealContributions(username: string, year?: number): Promise<{ weeks: ContributionWeek[], totalContributions: number }> {
   const token = process.env.GITHUB_TOKEN;
   
   if (!token) {
@@ -204,8 +216,8 @@ async function fetchRealContributions(username: string, year?: number): Promise<
   const contributionCalendar = data.data.user.contributionsCollection.contributionCalendar;
   
   // Transform GitHub's GraphQL response to match our expected format
-  const weeks = contributionCalendar.weeks.map((week: any) => ({
-    contributionDays: week.contributionDays.map((day: any) => {
+  const weeks = contributionCalendar.weeks.map((week: GitHubContributionWeek) => ({
+    contributionDays: week.contributionDays.map((day: GitHubContributionDay) => {
       // Convert GitHub's string levels to numbers
       let level: 0 | 1 | 2 | 3 | 4 = 0;
       switch (day.contributionLevel) {
