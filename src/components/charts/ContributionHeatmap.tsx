@@ -185,7 +185,7 @@ export default function ContributionHeatmap({
           </div>
 
           {/* Heatmap Grid */}
-          <div className="flex gap-1 mt-4">
+          <div className="flex gap-1 mt-5">
             {weeks.map((week, weekIndex) => (
               <div key={weekIndex} className="flex flex-col gap-1">
                 {week.contributionDays.map((day, dayIndex) => (
