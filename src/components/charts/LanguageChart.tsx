@@ -202,21 +202,19 @@ export default function LanguageChart({ data, type = 'pie', className = '' }: La
       </div>
 
       {/* Enhanced Legend */}
-      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div className="mt-4 flex flex-wrap gap-2 justify-center">
         {chartData.map((lang) => (
-          <div key={lang.language} className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-gray-800/50 to-gray-700/50 border border-gray-600 hover:border-gray-500 transition-all duration-200 hover:shadow-lg">
+          <div key={lang.language} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-800/60 border border-gray-600/50 hover:border-gray-500/70 transition-colors duration-200">
             <div
-              className="w-4 h-4 rounded-full shadow-sm"
+              className="w-2.5 h-2.5 rounded-full"
               style={{ backgroundColor: lang.color }}
             />
-            <div className="flex-1 min-w-0">
-              <span className="text-sm font-medium text-white truncate block">
-                {lang.language}
-              </span>
-              <span className="text-xs text-gray-400">
-                {lang.percentage}% • {lang.size.toLocaleString()} bytes
-              </span>
-            </div>
+            <span className="text-xs font-medium text-gray-200">
+              {lang.language}
+            </span>
+            <span className="text-xs text-gray-400 font-mono">
+              {lang.percentage}%
+            </span>
           </div>
         ))}
       </div>
