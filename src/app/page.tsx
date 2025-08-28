@@ -47,14 +47,14 @@ export default function Home() {
             {/* Hero Section */}
             <div className="text-center mb-20">
               <h2 className="text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight">
-                Transform Your<br />
+                Transform<br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-500">
                   GitHub Activity
                 </span>
               </h2>
               <p className="text-xl text-gray-400 mb-12 max-w-2xl mx-auto leading-relaxed">
                 Generate stunning contribution visualizations and analytics 
-                that showcase your coding journey like never before.
+                that showcase coding journeys like never before.
               </p>
 
               {/* Search Form */}
@@ -88,7 +88,7 @@ export default function Home() {
                 </div>
                 <h3 className="text-lg font-semibold text-white mb-2">Beautiful Charts</h3>
                 <p className="text-gray-400 text-sm">
-                  Heatmaps, timelines, and language breakdowns that make your profile shine
+                  Heatmaps, timelines, and language breakdowns that make profiles shine
                 </p>
               </div>
 
@@ -120,7 +120,7 @@ export default function Home() {
             {/* Minimal CTA */}
             <div className="text-center bg-gradient-to-r from-gray-800/30 to-gray-800/10 border border-gray-700/30 rounded-3xl p-12">
               <h3 className="text-2xl font-semibold text-white mb-4">
-                Ready to elevate your developer profile?
+                Ready to elevate developer profiles?
               </h3>
               <div className="flex items-center justify-center gap-8 text-sm text-gray-400">
                 <span className="flex items-center gap-2">

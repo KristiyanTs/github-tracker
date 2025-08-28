@@ -13,13 +13,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "GitHub Activity Tracker | Break the Rules, Own Your Code",
-  description: "Transform your GitHub contribution data into stunning visuals for your CV. Generate heatmaps, analytics, and charts to showcase your coding activity.",
+        title: "GitHub Activity Tracker | Break the Rules, Own Your Code",
+      description: "Transform GitHub contribution data into stunning visuals for CVs. Generate heatmaps, analytics, and charts to showcase coding activity.",
   keywords: ["github", "contributions", "developer", "analytics", "cv", "resume", "portfolio"],
   authors: [{ name: "GitHub Activity Tracker" }],
   openGraph: {
     title: "GitHub Activity Tracker",
-    description: "Transform your GitHub activity into killer visuals for your CV",
+          description: "Transform GitHub activity into killer visuals for CVs",
     type: "website",
   },
 };

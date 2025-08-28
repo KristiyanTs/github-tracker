@@ -366,7 +366,7 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
                 <div className="mb-6 flex items-center justify-between">
                   <div>
                     <h3 className="text-xl font-bold text-white mb-2">Contribution Heatmap</h3>
-                    <p className="text-gray-400 text-sm">Your daily contribution activity visualization</p>
+                    <p className="text-gray-400 text-sm">Daily contribution activity visualization</p>
                   </div>
                   <ExportButton 
                     targetId="heatmap-chart" 
@@ -390,7 +390,7 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
                 <div className="flex justify-between items-center mb-6">
                   <div>
                     <h3 className="text-xl font-bold text-white mb-2">Activity Statistics</h3>
-                    <p className="text-gray-400 text-sm">Your GitHub activity metrics and patterns</p>
+                    <p className="text-gray-400 text-sm">GitHub activity metrics and patterns</p>
                   </div>
                   <ExportButton 
                     targetId="stats-chart" 
@@ -411,7 +411,7 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
                 <div className="flex justify-between items-center mb-6">
                   <div>
                     <h3 className="text-xl font-bold text-white mb-2">Contribution Timeline</h3>
-                    <p className="text-gray-400 text-sm">Your activity patterns over time</p>
+                    <p className="text-gray-400 text-sm">Activity patterns over time</p>
                   </div>
                   <ExportButton 
                     targetId="timeline-chart" 
@@ -434,7 +434,7 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
             <div className="flex justify-between items-center mb-6">
               <div>
                 <h3 className="text-xl font-bold text-white mb-2">Programming Languages</h3>
-                <p className="text-gray-400 text-sm">Your most used languages and technologies</p>
+                                    <p className="text-gray-400 text-sm">Most used languages and technologies</p>
               </div>
               <ExportButton 
                 targetId="languages-chart" 

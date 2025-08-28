@@ -129,7 +129,7 @@ export default function StatsCard({ stats, className = '', selectedYear }: Stats
         <StatItem
           title="Longest Streak"
           value={formatStreak(safeStats.longestStreak)}
-          subtitle="Your personal record"
+          subtitle="Personal record"
           icon={<TrendingIcon />}
         />
         
@@ -150,14 +150,14 @@ export default function StatsCard({ stats, className = '', selectedYear }: Stats
         <StatItem
           title="Most Active Day"
           value={safeStats.mostActiveDay}
-          subtitle="When you code the most"
+          subtitle="When coding happens most"
           icon={<CalendarIcon />}
         />
         
         <StatItem
           title="Peak Month"
           value={safeStats.mostActiveMonth}
-          subtitle="Your most productive month"
+          subtitle="Most productive month"
           icon={<CalendarIcon />}
         />
       </div>
@@ -223,7 +223,7 @@ export default function StatsCard({ stats, className = '', selectedYear }: Stats
               {safeStats.totalContributions >= 365 ? 'Achieved 365+ contributions! Daily average goal met.' : 
                safeStats.totalContributions >= 100 ? '100+ contributions milestone reached!' : 
                safeStats.totalContributions >= 50 ? '50+ contributions milestone reached!' : 
-               'Keep contributing to reach your first milestone!'}
+               'Keep contributing to reach the first milestone!'}
               <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
             </div>
           </div>
