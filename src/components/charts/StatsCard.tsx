@@ -171,27 +171,47 @@ export default function StatsCard({ stats, className = '', selectedYear }: Stats
           Quick Insights
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
-          <div className="flex justify-between items-center py-2">
+          <div className="group relative flex justify-between items-center py-2 cursor-help">
             <span className="text-gray-400">Consistency:</span>
             <span className="text-green-400 font-medium">{consistencyScore}</span>
+            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10 border border-gray-600">
+              Based on daily average: {formatAverage(safeStats.averagePerDay)} contributions/day
+              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+            </div>
           </div>
-          <div className="flex justify-between items-center py-2">
+          <div className="group relative flex justify-between items-center py-2 cursor-help">
             <span className="text-gray-400">Activity Level:</span>
             <span className="text-blue-400 font-medium">{activityLevel}</span>
+            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10 border border-gray-600">
+              Based on total contributions: {safeStats.totalContributions.toLocaleString()} in the period
+              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+            </div>
           </div>
-          <div className="flex justify-between items-center py-2">
+          <div className="group relative flex justify-between items-center py-2 cursor-help">
             <span className="text-gray-400">Streak Power:</span>
             <span className="text-purple-400 font-medium">{streakEfficiency}%</span>
+            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10 border border-gray-600">
+              Current streak ({safeStats.currentStreak} days) vs longest streak ({safeStats.longestStreak} days)
+              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+            </div>
           </div>
-          <div className="flex justify-between items-center py-2">
+          <div className="group relative flex justify-between items-center py-2 cursor-help">
             <span className="text-gray-400">Weekly Avg:</span>
             <span className="text-yellow-400 font-medium">{weeklyAverage}</span>
+            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10 border border-gray-600">
+              Daily average × 7: {formatAverage(safeStats.averagePerDay)} × 7 = {weeklyAverage}
+              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+            </div>
           </div>
-          <div className="flex justify-between items-center py-2">
+          <div className="group relative flex justify-between items-center py-2 cursor-help">
             <span className="text-gray-400">Monthly Avg:</span>
             <span className="text-orange-400 font-medium">{monthlyAverage}</span>
+            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10 border border-gray-600">
+              Daily average × 30: {formatAverage(safeStats.averagePerDay)} × 30 = {monthlyAverage}
+              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+            </div>
           </div>
-          <div className="flex justify-between items-center py-2">
+          <div className="group relative flex justify-between items-center py-2 cursor-help">
             <span className="text-gray-400">Goal Status:</span>
             <span className="text-red-400 font-medium">
               {safeStats.totalContributions >= 365 ? '365+ Days!' : 
@@ -199,6 +219,13 @@ export default function StatsCard({ stats, className = '', selectedYear }: Stats
                safeStats.totalContributions >= 50 ? '50+ Milestone!' : 
                'Getting Started!'}
             </span>
+            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10 border border-gray-600">
+              {safeStats.totalContributions >= 365 ? 'Achieved 365+ contributions! Daily average goal met.' : 
+               safeStats.totalContributions >= 100 ? '100+ contributions milestone reached!' : 
+               safeStats.totalContributions >= 50 ? '50+ contributions milestone reached!' : 
+               'Keep contributing to reach your first milestone!'}
+              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+            </div>
           </div>
         </div>
       </div>
