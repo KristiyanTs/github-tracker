@@ -120,41 +120,7 @@ export default function ContributionHeatmap({
         style={{ display: 'none' }}
       />
       
-      {/* Chart Header with Title, Year Selector, and Export Button */}
-      <div className="mb-4 flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <h3 className="text-xl font-bold text-white">
-            {data.totalContributions.toLocaleString()} contributions in {currentYear}
-          </h3>
-          
-          {/* Year Selector */}
-          <div className="flex items-center space-x-2">
-            <label htmlFor="year-selector" className="text-sm text-gray-400">
-              Year:
-            </label>
-            <select
-              id="year-selector"
-              value={currentYear}
-              onChange={handleYearChange}
-              className="bg-gray-800 border border-gray-600 text-white text-sm rounded px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              {years.map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-        
-        {/* Export Button */}
-        <ExportButton 
-          targetId="heatmap-chart" 
-          filename={`github-heatmap-${data.user?.login || 'user'}`}
-          minimal={true}
-          tooltip="Save heatmap image"
-        />
-      </div>
+
 
       <div className="relative">
         {/* Month Labels */}

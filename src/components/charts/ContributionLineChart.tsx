@@ -51,11 +51,6 @@ export default function ContributionLineChart({ data, className = '' }: Contribu
 
   return (
     <div className={`contribution-line-chart ${className}`}>
-      <div className="mb-4">
-        <h3 className="text-xl font-bold text-white mb-2">Contribution Timeline</h3>
-        <p className="text-gray-400 text-sm">Weekly contribution activity over the past year</p>
-      </div>
-      
       <div className="h-80 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData}>

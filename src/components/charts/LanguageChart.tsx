@@ -51,10 +51,6 @@ export default function LanguageChart({ data, type = 'bar', className = '' }: La
   if (chartData.length === 0) {
     return (
       <div className={`language-chart ${className}`}>
-        <div className="mb-4">
-          <h3 className="text-xl font-bold text-white mb-2">Programming Languages</h3>
-          <p className="text-gray-400 text-sm">No language data available</p>
-        </div>
         <div className="h-80 w-full flex items-center justify-center">
           <p className="text-gray-500">No language statistics found</p>
         </div>
@@ -89,13 +85,6 @@ export default function LanguageChart({ data, type = 'bar', className = '' }: La
 
   return (
     <div className={`language-chart ${className}`}>
-      <div className="mb-4">
-        <h3 className="text-xl font-bold text-white mb-2">Programming Languages</h3>
-        <p className="text-gray-400 text-sm">
-          {type === 'bar' ? 'Repository language breakdown by code size' : 'Language distribution'}
-        </p>
-      </div>
-      
       <div className="h-80 w-full">
         <ResponsiveContainer width="100%" height="100%">
           {type === 'bar' ? (

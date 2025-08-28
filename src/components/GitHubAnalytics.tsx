@@ -239,6 +239,32 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
       <div className="space-y-8">
         {(activeChart === 'all' || activeChart === 'heatmap') && (
           <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
+            <div className="mb-6 flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-bold text-white mb-2">Contribution Heatmap</h3>
+                <p className="text-gray-400 text-sm">Your daily contribution activity visualization</p>
+              </div>
+              <div className="flex items-center space-x-3">
+                <select
+                  id="year-selector"
+                  value={selectedYear}
+                  onChange={(e) => handleYearChange(parseInt(e.target.value))}
+                  className="bg-gray-800 border border-gray-600 text-white text-sm rounded px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i).map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
+                <ExportButton 
+                  targetId="heatmap-chart" 
+                  filename={`github-heatmap-${data.user.login}`}
+                  minimal={true}
+                  tooltip="Save heatmap image"
+                />
+              </div>
+            </div>
             <div id="heatmap-chart">
               <ContributionHeatmap 
                 data={data.contributions} 
@@ -252,8 +278,11 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
 
         {(activeChart === 'all' || activeChart === 'stats') && (
           <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-            <div className="flex justify-between items-center mb-4">
-              <div></div>
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h3 className="text-xl font-bold text-white mb-2">Activity Statistics</h3>
+                <p className="text-gray-400 text-sm">Your GitHub activity metrics and patterns</p>
+              </div>
               <ExportButton 
                 targetId="stats-chart" 
                 filename={`github-stats-${data.user.login}`}
@@ -269,8 +298,11 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
 
         {(activeChart === 'all' || activeChart === 'line') && (
           <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-            <div className="flex justify-between items-center mb-4">
-              <div></div>
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h3 className="text-xl font-bold text-white mb-2">Contribution Timeline</h3>
+                <p className="text-gray-400 text-sm">Your activity patterns over time</p>
+              </div>
               <ExportButton 
                 targetId="timeline-chart" 
                 filename={`github-timeline-${data.user.login}`}
@@ -286,8 +318,11 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
 
         {(activeChart === 'all' || activeChart === 'languages') && (
           <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-            <div className="flex justify-between items-center mb-4">
-              <div></div>
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h3 className="text-xl font-bold text-white mb-2">Programming Languages</h3>
+                <p className="text-gray-400 text-sm">Your most used languages and technologies</p>
+              </div>
               <ExportButton 
                 targetId="languages-chart" 
                 filename={`github-languages-${data.user.login}`}

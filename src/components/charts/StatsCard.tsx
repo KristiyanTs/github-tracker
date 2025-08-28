@@ -72,13 +72,18 @@ export default function StatsCard({ stats, className = '' }: StatsCardProps) {
     </svg>
   );
 
+  // Calculate additional insights
+  const consistencyScore = stats.averagePerDay > 1 ? 'High' : stats.averagePerDay > 0.5 ? 'Medium' : 'Building';
+  const activityLevel = stats.totalContributions > 1000 ? 'Very Active' : 
+                       stats.totalContributions > 500 ? 'Active' : 
+                       stats.totalContributions > 100 ? 'Regular' : 'Getting Started';
+  const streakEfficiency = stats.currentStreak > 0 ? 
+    Math.round((stats.currentStreak / stats.longestStreak) * 100) : 0;
+  const weeklyAverage = (stats.averagePerDay * 7).toFixed(1);
+  const monthlyAverage = (stats.averagePerDay * 30).toFixed(1);
+
   return (
     <div className={`stats-card ${className}`}>
-      <div className="mb-6">
-        <h3 className="text-xl font-bold text-white mb-2">Activity Statistics</h3>
-        <p className="text-gray-400 text-sm">Your GitHub activity metrics and patterns</p>
-      </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <StatItem
           title="Current Streak"
@@ -123,27 +128,42 @@ export default function StatsCard({ stats, className = '' }: StatsCardProps) {
         />
       </div>
 
-      {/* Additional insights */}
-      <div className="mt-6 p-4 bg-gray-800 border border-gray-700 rounded-lg">
-        <h4 className="text-lg font-semibold text-white mb-2 flex items-center gap-2">
+      {/* Quick Insights */}
+      <div className="mt-6">
+        <h4 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
           <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
           </svg>
           Quick Insights
         </h4>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-          <div>
-            <span className="text-gray-400">Consistency Score:</span>{' '}
-            <span className="text-green-400 font-medium">
-              {stats.averagePerDay > 1 ? 'High' : stats.averagePerDay > 0.5 ? 'Medium' : 'Building'}
-            </span>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+          <div className="flex justify-between items-center py-2 border-b border-gray-700">
+            <span className="text-gray-400">Consistency:</span>
+            <span className="text-green-400 font-medium">{consistencyScore}</span>
           </div>
-          <div>
-            <span className="text-gray-400">Activity Level:</span>{' '}
-            <span className="text-green-400 font-medium">
-              {stats.totalContributions > 1000 ? 'Very Active' : 
-               stats.totalContributions > 500 ? 'Active' : 
-               stats.totalContributions > 100 ? 'Regular' : 'Getting Started'}
+          <div className="flex justify-between items-center py-2 border-b border-gray-700">
+            <span className="text-gray-400">Activity Level:</span>
+            <span className="text-blue-400 font-medium">{activityLevel}</span>
+          </div>
+          <div className="flex justify-between items-center py-2 border-b border-gray-700">
+            <span className="text-gray-400">Streak Power:</span>
+            <span className="text-purple-400 font-medium">{streakEfficiency}%</span>
+          </div>
+          <div className="flex justify-between items-center py-2 border-b border-gray-700">
+            <span className="text-gray-400">Weekly Avg:</span>
+            <span className="text-yellow-400 font-medium">{weeklyAverage}</span>
+          </div>
+          <div className="flex justify-between items-center py-2 border-b border-gray-700">
+            <span className="text-gray-400">Monthly Avg:</span>
+            <span className="text-orange-400 font-medium">{monthlyAverage}</span>
+          </div>
+          <div className="flex justify-between items-center py-2 border-b border-gray-700">
+            <span className="text-gray-400">Goal Status:</span>
+            <span className="text-red-400 font-medium">
+              {stats.totalContributions >= 365 ? '365+ Days!' : 
+               stats.totalContributions >= 100 ? '100+ Club!' : 
+               stats.totalContributions >= 50 ? '50+ Milestone!' : 
+               'Getting Started!'}
             </span>
           </div>
         </div>
