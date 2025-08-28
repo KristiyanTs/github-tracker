@@ -369,7 +369,7 @@ async function fetchRealContributions(username: string, year?: number): Promise<
   };
 }
 
-export function calculateActivityStats(contributionData: ContributionData): ActivityStats {
+export function calculateActivityStats(contributionData: ContributionData, year?: number): ActivityStats {
   // Validate input data
   if (!contributionData || !contributionData.weeks || contributionData.weeks.length === 0) {
     throw new Error('Invalid contribution data: missing or empty weeks data');
@@ -392,16 +392,23 @@ export function calculateActivityStats(contributionData: ContributionData): Acti
   let longestStreak = 0;
   let tempStreak = 0;
   
-  // Calculate current streak (consecutive days from most recent)
-  // Start from the end (most recent) and work backwards
-  for (let i = sortedDays.length - 1; i >= 0; i--) {
-    const day = sortedDays[i];
-    if (day.count > 0) {
-      currentStreak++;
-    } else {
-      break; // Stop at first day with no contributions
+  // Only calculate current streak for current year data
+  const currentYear = new Date().getFullYear();
+  const isCurrentYearData = !year || year === currentYear;
+  
+  if (isCurrentYearData) {
+    // Calculate current streak (consecutive days from most recent)
+    // Start from the end (most recent) and work backwards
+    for (let i = sortedDays.length - 1; i >= 0; i--) {
+      const day = sortedDays[i];
+      if (day.count > 0) {
+        currentStreak++;
+      } else {
+        break; // Stop at first day with no contributions
+      }
     }
   }
+  // For historical years, current streak doesn't make sense so leave it as 0
   
   // Calculate longest streak
   for (let i = 0; i < sortedDays.length; i++) {

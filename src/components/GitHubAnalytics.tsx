@@ -108,7 +108,7 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
         return {
           ...prevData,
           contributions: newContributions,
-          stats: calculateActivityStats(newContributions)
+          stats: calculateActivityStats(newContributions, year)
         };
       });
     } catch (err: unknown) {
@@ -261,105 +261,133 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
       </div>
 
       {/* Chart Navigation */}
-      <div className="flex flex-wrap gap-1">
-        {chartButtons.map((button) => (
-          <button
-            key={button.id}
-            onClick={() => setActiveChart(button.id)}
-            className={`px-3 py-1.5 rounded-md text-sm transition-colors flex items-center gap-1.5 ${
-              activeChart === button.id
-                ? 'bg-green-600 text-white'
-                : 'bg-gray-700/50 text-gray-400 hover:bg-gray-600/50 hover:text-gray-300'
-            }`}
-          >
-            {button.icon} {button.label}
-          </button>
-        ))}
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="flex flex-wrap gap-1">
+          {chartButtons.map((button) => (
+            <button
+              key={button.id}
+              onClick={() => setActiveChart(button.id)}
+              className={`px-3 py-1.5 rounded-md text-sm transition-colors flex items-center gap-1.5 ${
+                activeChart === button.id
+                  ? 'bg-green-600 text-white'
+                  : 'bg-gray-700/50 text-gray-400 hover:bg-gray-600/50 hover:text-gray-300'
+              }`}
+            >
+              {button.icon} {button.label}
+            </button>
+          ))}
+        </div>
+        
+        {/* Year Selector - only show for year-affected charts */}
+        {(activeChart === 'all' || activeChart === 'heatmap' || activeChart === 'line' || activeChart === 'stats') && (
+          <div className="flex items-center gap-2">
+            <label htmlFor="year-selector" className="text-sm text-gray-400">Year:</label>
+            <select
+              id="year-selector"
+              value={selectedYear}
+              onChange={(e) => handleYearChange(parseInt(e.target.value))}
+              className="bg-gray-800 border border-gray-600 text-white text-sm rounded px-3 py-1 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            >
+              {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i).map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
 
       {/* Chart Content */}
       <div className="space-y-8">
-        {(activeChart === 'all' || activeChart === 'heatmap') && (
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-            <div className="mb-6 flex items-center justify-between">
-              <div>
-                <h3 className="text-xl font-bold text-white mb-2">Contribution Heatmap</h3>
-                <p className="text-gray-400 text-sm">Your daily contribution activity visualization</p>
+        {/* Year-Affected Components Wrapper */}
+        {(activeChart === 'all' || activeChart === 'heatmap' || activeChart === 'stats' || activeChart === 'line') && (
+          <div className="space-y-12">
+            {/* Contribution Heatmap */}
+            {(activeChart === 'all' || activeChart === 'heatmap') && (
+              <div className="py-4">
+                <div className="mb-6 flex items-center justify-between">
+                  <div>
+                    <h3 className="text-xl font-bold text-white mb-2">Contribution Heatmap</h3>
+                    <p className="text-gray-400 text-sm">Your daily contribution activity visualization</p>
+                  </div>
+                  <ExportButton 
+                    targetId="heatmap-chart" 
+                    filename={`github-heatmap-${data.user.login}`}
+                    minimal={true}
+                    tooltip="Save heatmap image"
+                  />
+                </div>
+                <div id="heatmap-chart">
+                  <ContributionHeatmap 
+                    data={data.contributions} 
+                    onYearChange={handleYearChange}
+                    availableYears={Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i)}
+                    selectedYear={selectedYear}
+                  />
+                </div>
+                {/* Separator */}
+                {activeChart === 'all' && (
+                  <div className="mt-12 border-t border-gray-800/50"></div>
+                )}
               </div>
-              <div className="flex items-center space-x-3">
-                <select
-                  id="year-selector"
-                  value={selectedYear}
-                  onChange={(e) => handleYearChange(parseInt(e.target.value))}
-                  className="bg-gray-800 border border-gray-600 text-white text-sm rounded px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i).map((year) => (
-                    <option key={year} value={year}>
-                      {year}
-                    </option>
-                  ))}
-                </select>
-                <ExportButton 
-                  targetId="heatmap-chart" 
-                  filename={`github-heatmap-${data.user.login}`}
-                  minimal={true}
-                  tooltip="Save heatmap image"
-                />
+            )}
+
+            {/* Activity Statistics */}
+            {(activeChart === 'all' || activeChart === 'stats') && (
+              <div className="py-4">
+                <div className="flex justify-between items-center mb-6">
+                  <div>
+                    <h3 className="text-xl font-bold text-white mb-2">Activity Statistics</h3>
+                    <p className="text-gray-400 text-sm">Your GitHub activity metrics and patterns</p>
+                  </div>
+                  <ExportButton 
+                    targetId="stats-chart" 
+                    filename={`github-stats-${data.user.login}`}
+                    minimal={true}
+                    tooltip="Save stats as image"
+                  />
+                </div>
+                <div id="stats-chart">
+                  <StatsCard stats={data.stats} selectedYear={selectedYear} />
+                </div>
+                {/* Separator */}
+                {activeChart === 'all' && (
+                  <div className="mt-12 border-t border-gray-800/50"></div>
+                )}
               </div>
-            </div>
-            <div id="heatmap-chart">
-              <ContributionHeatmap 
-                data={data.contributions} 
-                onYearChange={handleYearChange}
-                availableYears={Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i)}
-                selectedYear={selectedYear}
-              />
-            </div>
+            )}
+
+            {/* Contribution Timeline */}
+            {(activeChart === 'all' || activeChart === 'line') && (
+              <div className="py-4">
+                <div className="flex justify-between items-center mb-6">
+                  <div>
+                    <h3 className="text-xl font-bold text-white mb-2">Contribution Timeline</h3>
+                    <p className="text-gray-400 text-sm">Your activity patterns over time</p>
+                  </div>
+                  <ExportButton 
+                    targetId="timeline-chart" 
+                    filename={`github-timeline-${data.user.login}`}
+                    minimal={true}
+                    tooltip="Save timeline as image"
+                  />
+                </div>
+                <div id="timeline-chart">
+                  <ContributionLineChart data={data.contributions} />
+                </div>
+                {/* Separator - only show if Languages section will appear */}
+                {activeChart === 'all' && (
+                  <div className="mt-12 border-t border-gray-800/50"></div>
+                )}
+              </div>
+            )}
           </div>
         )}
 
-        {(activeChart === 'all' || activeChart === 'stats') && (
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <h3 className="text-xl font-bold text-white mb-2">Activity Statistics</h3>
-                <p className="text-gray-400 text-sm">Your GitHub activity metrics and patterns</p>
-              </div>
-              <ExportButton 
-                targetId="stats-chart" 
-                filename={`github-stats-${data.user.login}`}
-                minimal={true}
-                tooltip="Save stats as image"
-              />
-            </div>
-            <div id="stats-chart">
-              <StatsCard stats={data.stats} />
-            </div>
-          </div>
-        )}
-
-        {(activeChart === 'all' || activeChart === 'line') && (
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <h3 className="text-xl font-bold text-white mb-2">Contribution Timeline</h3>
-                <p className="text-gray-400 text-sm">Your activity patterns over time</p>
-              </div>
-              <ExportButton 
-                targetId="timeline-chart" 
-                filename={`github-timeline-${data.user.login}`}
-                minimal={true}
-                tooltip="Save timeline as image"
-              />
-            </div>
-            <div id="timeline-chart">
-              <ContributionLineChart data={data.contributions} />
-            </div>
-          </div>
-        )}
-
+        {/* Languages Chart - Separate since it's not affected by year */}
         {(activeChart === 'all' || activeChart === 'languages') && (
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
+          <div className="py-4">
             <div className="flex justify-between items-center mb-6">
               <div>
                 <h3 className="text-xl font-bold text-white mb-2">Programming Languages</h3>

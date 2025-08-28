@@ -6,6 +6,7 @@ import { ActivityStats } from '@/types/github';
 interface StatsCardProps {
   stats: ActivityStats;
   className?: string;
+  selectedYear?: number;
 }
 
 interface StatItemProps {
@@ -13,22 +14,27 @@ interface StatItemProps {
   value: string | number;
   subtitle?: string;
   icon?: React.ReactNode;
+  disabled?: boolean;
 }
 
-function StatItem({ title, value, subtitle, icon }: StatItemProps) {
+function StatItem({ title, value, subtitle, icon, disabled = false }: StatItemProps) {
   return (
-    <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 hover:border-green-500/50 transition-colors">
+    <div className={`bg-gray-800 border border-gray-700 rounded-lg p-4 transition-colors ${
+      disabled 
+        ? 'opacity-50 cursor-not-allowed' 
+        : 'hover:border-green-500/50'
+    }`}>
       <div className="flex items-center gap-3">
         {icon && (
-          <div className="text-green-400 flex-shrink-0">
+          <div className={`flex-shrink-0 ${disabled ? 'text-gray-500' : 'text-green-400'}`}>
             {icon}
           </div>
         )}
         <div className="flex-1 min-w-0">
-          <h4 className="text-lg font-bold text-white truncate">{title}</h4>
-          <p className="text-2xl font-extrabold text-green-400 mt-1">{value}</p>
+          <h4 className={`text-lg font-bold truncate ${disabled ? 'text-gray-500' : 'text-white'}`}>{title}</h4>
+          <p className={`text-2xl font-extrabold mt-1 ${disabled ? 'text-gray-500' : 'text-green-400'}`}>{value}</p>
           {subtitle && (
-            <p className="text-sm text-gray-400 mt-1">{subtitle}</p>
+            <p className={`text-sm mt-1 ${disabled ? 'text-gray-400' : 'text-gray-400'}`}>{subtitle}</p>
           )}
         </div>
       </div>
@@ -36,7 +42,7 @@ function StatItem({ title, value, subtitle, icon }: StatItemProps) {
   );
 }
 
-export default function StatsCard({ stats, className = '' }: StatsCardProps) {
+export default function StatsCard({ stats, className = '', selectedYear }: StatsCardProps) {
   // Validate stats data
   if (!stats) {
     return (
@@ -103,15 +109,21 @@ export default function StatsCard({ stats, className = '' }: StatsCardProps) {
     Math.round((safeStats.currentStreak / safeStats.longestStreak) * 100) : 0;
   const weeklyAverage = (safeStats.averagePerDay * 7).toFixed(1);
   const monthlyAverage = (safeStats.averagePerDay * 30).toFixed(1);
+  
+  // Determine if we should show current streak or historical streak info
+  const currentYear = new Date().getFullYear();
+  const isCurrentYear = !selectedYear || selectedYear === currentYear;
+  const showCurrentStreak = isCurrentYear && safeStats.currentStreak > 0;
 
   return (
     <div className={`stats-card ${className}`}>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <StatItem
           title="Current Streak"
-          value={formatStreak(safeStats.currentStreak)}
-          subtitle="Keep the momentum going!"
+          value={showCurrentStreak ? formatStreak(safeStats.currentStreak) : "N/A"}
+          subtitle={showCurrentStreak ? "Keep the momentum going!" : "Not available for historical years"}
           icon={<FireIcon />}
+          disabled={!showCurrentStreak}
         />
         
         <StatItem
@@ -124,7 +136,7 @@ export default function StatsCard({ stats, className = '' }: StatsCardProps) {
         <StatItem
           title="Total Contributions"
           value={safeStats.totalContributions.toLocaleString()}
-          subtitle="In the last year"
+          subtitle={isCurrentYear ? "In the last year" : `In ${selectedYear || currentYear}`}
           icon={<ChartIcon />}
         />
         
