@@ -1,8 +1,12 @@
 'use client';
 
 import React from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler } from 'chart.js';
+import { Line } from 'react-chartjs-2';
 import { ContributionData } from '@/types/github';
+
+// Register Chart.js components
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
 interface ContributionLineChartProps {
   data: ContributionData;
@@ -15,81 +19,115 @@ export default function ContributionLineChart({ data, className = '' }: Contribu
     const weekTotal = week.contributionDays.reduce((sum, day) => sum + day.count, 0);
     const firstDay = week.contributionDays[0];
     const date = new Date(firstDay.date);
-    const weekLabel = `Week ${index + 1}`;
     const monthLabel = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     
     return {
-      week: weekLabel,
+      week: `Week ${index + 1}`,
       contributions: weekTotal,
       label: monthLabel,
       date: firstDay.date
     };
   });
 
-  interface TooltipPayload {
-    payload: {
-      week: string;
-      contributions: number;
-      label: string;
-      date: string;
-    };
-    value: number;
-  }
-
-  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: TooltipPayload[]; label?: string }) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      return (
-        <div className="bg-gray-900 border border-gray-700 p-3 rounded-lg shadow-lg">
-          <p className="text-white font-medium">{`${payload[0].value} contributions`}</p>
-          <p className="text-gray-300 text-sm">{`Week starting ${data.label}`}</p>
-        </div>
-      );
+  const chartConfig = {
+    data: {
+      labels: chartData.map(item => item.label),
+      datasets: [{
+        label: 'Contributions',
+        data: chartData.map(item => item.contributions),
+        borderColor: '#10B981',
+        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        borderWidth: 3,
+        fill: true,
+        tension: 0.4,
+        pointBackgroundColor: '#10B981',
+        pointBorderColor: '#ffffff',
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        pointHoverBackgroundColor: '#059669',
+        pointHoverBorderColor: '#ffffff',
+        pointHoverBorderWidth: 3,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false,
+        },
+        tooltip: {
+          backgroundColor: 'rgba(17, 24, 39, 0.95)',
+          titleColor: '#ffffff',
+          bodyColor: '#d1d5db',
+          borderColor: '#374151',
+          borderWidth: 1,
+          cornerRadius: 8,
+          displayColors: false,
+          callbacks: {
+            title: function(tooltipItems: any) {
+              const dataIndex = tooltipItems[0].dataIndex;
+              const weekData = chartData[dataIndex];
+              return `Week starting ${weekData.label}`;
+            },
+            label: function(tooltipItem: any) {
+              return `${tooltipItem.parsed.y} contributions`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: {
+            color: 'rgba(55, 65, 81, 0.3)',
+            borderColor: '#374151',
+          },
+          ticks: {
+            color: '#9ca3af',
+            maxTicksLimit: 8,
+            callback: function(value: any, index: number) {
+              // Show every 4th label to avoid crowding
+              return index % 4 === 0 ? chartData[index]?.label : '';
+            }
+          }
+        },
+        y: {
+          grid: {
+            color: 'rgba(55, 65, 81, 0.3)',
+            borderColor: '#374151',
+          },
+          ticks: {
+            color: '#9ca3af',
+            beginAtZero: true,
+            padding: 10,
+          },
+          label: {
+            display: true,
+            text: 'Contributions',
+            color: '#9ca3af',
+            font: {
+              size: 12
+            }
+          }
+        }
+      },
+      interaction: {
+        intersect: false,
+        mode: 'index' as const,
+      },
+      elements: {
+        point: {
+          hoverRadius: 6,
+        }
+      }
     }
-    return null;
   };
 
   return (
     <div className={`contribution-line-chart ${className}`}>
       <div className="h-80 w-full">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-            <XAxis
-              dataKey="label"
-              stroke="#9CA3AF"
-              fontSize={12}
-              interval="preserveStartEnd"
-              tickFormatter={(value, index) => {
-                // Show every 4th label to avoid crowding
-                return index % 4 === 0 ? value : '';
-              }}
-            />
-            <YAxis
-              stroke="#9CA3AF"
-              fontSize={12}
-              label={{ value: 'Contributions', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#9CA3AF' } }}
-            />
-            <Tooltip content={<CustomTooltip />} />
-            <Line
-              type="monotone"
-              dataKey="contributions"
-              stroke="#10B981"
-              strokeWidth={2}
-              dot={{
-                fill: '#10B981',
-                strokeWidth: 2,
-                r: 3
-              }}
-              activeDot={{
-                r: 5,
-                fill: '#059669',
-                stroke: '#10B981',
-                strokeWidth: 2
-              }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+        <Line data={chartConfig.data} options={chartConfig.options} />
       </div>
     </div>
   );

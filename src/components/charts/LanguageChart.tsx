@@ -1,8 +1,12 @@
 'use client';
 
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from 'chart.js';
+import { Pie, Bar } from 'react-chartjs-2';
 import { LanguageStats } from '@/types/github';
+
+// Register Chart.js components
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
 interface LanguageChartProps {
   data: LanguageStats;
@@ -34,13 +38,13 @@ const LANGUAGE_COLORS: { [key: string]: string } = {
   Default: '#6b7280'
 };
 
-export default function LanguageChart({ data, type = 'bar', className = '' }: LanguageChartProps) {
+export default function LanguageChart({ data, type = 'pie', className = '' }: LanguageChartProps) {
   // Transform data for charts
   const totalSize = Object.values(data).reduce((sum, size) => sum + size, 0);
   
   const chartData = Object.entries(data)
     .sort(([, a], [, b]) => b - a)
-    .slice(0, 10) // Show top 10 languages
+    .slice(0, 8) // Show top 8 languages for better pie chart readability
     .map(([language, size]) => ({
       language,
       size,
@@ -58,94 +62,142 @@ export default function LanguageChart({ data, type = 'bar', className = '' }: La
     );
   }
 
-  interface TooltipPayload {
-    payload: {
-      language: string;
-      size: number;
-      percentage: string;
-      color: string;
-    };
-    value: number;
-  }
-
-  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: TooltipPayload[] }) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      return (
-        <div className="bg-gray-900 border border-gray-700 p-3 rounded-lg shadow-lg">
-          <p className="text-white font-medium">{data.language}</p>
-          <p className="text-gray-300 text-sm">{`${data.percentage}% (${data.size.toLocaleString()} bytes)`}</p>
-        </div>
-      );
+  // Chart.js configuration
+  const chartConfig = {
+    data: {
+      labels: chartData.map(item => item.language),
+      datasets: [{
+        data: chartData.map(item => item.size),
+        backgroundColor: chartData.map(item => item.color),
+        borderColor: chartData.map(item => item.color),
+        borderWidth: 2,
+        hoverBorderWidth: 4,
+        hoverOffset: 10,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false, // We'll create a custom legend
+        },
+        tooltip: {
+          backgroundColor: 'rgba(17, 24, 39, 0.95)',
+          titleColor: '#ffffff',
+          bodyColor: '#d1d5db',
+          borderColor: '#374151',
+          borderWidth: 1,
+          cornerRadius: 8,
+          displayColors: true,
+          callbacks: {
+            label: function(tooltipItem: any) {
+              const label = tooltipItem.label || '';
+              const value = tooltipItem.parsed;
+              const percentage = ((value / totalSize) * 100).toFixed(1);
+              return `${label}: ${percentage}% (${value.toLocaleString()} bytes)`;
+            }
+          }
+        }
+      },
+      elements: {
+        arc: {
+          borderWidth: 0,
+        }
+      }
     }
-    return null;
   };
 
-
+  // Bar chart configuration
+  const barConfig = {
+    data: {
+      labels: chartData.map(item => item.language),
+      datasets: [{
+        data: chartData.map(item => item.size),
+        backgroundColor: chartData.map(item => item.color),
+        borderColor: chartData.map(item => item.color),
+        borderWidth: 0,
+        borderRadius: 6,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      indexAxis: 'y' as const,
+      plugins: {
+        legend: {
+          display: false,
+        },
+        tooltip: {
+          backgroundColor: 'rgba(17, 24, 39, 0.95)',
+          titleColor: '#ffffff',
+          bodyColor: '#d1d5db',
+          borderColor: '#374151',
+          borderWidth: 1,
+          cornerRadius: 8,
+          displayColors: true,
+          callbacks: {
+            label: function(tooltipItem: any) {
+              const label = tooltipItem.label || '';
+              const value = tooltipItem.parsed;
+              const percentage = ((value / totalSize) * 100).toFixed(1);
+              return `${label}: ${percentage}% (${value.toLocaleString()} bytes)`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: {
+            color: 'rgba(55, 65, 81, 0.3)',
+            borderColor: '#374151',
+          },
+          ticks: {
+            color: '#9ca3af',
+            callback: function(value: any) {
+              return `${(value / 1000).toFixed(0)}K`;
+            }
+          }
+        },
+        y: {
+          grid: {
+            display: false,
+          },
+          ticks: {
+            color: '#9ca3af',
+          }
+        }
+      }
+    }
+  };
 
   return (
     <div className={`language-chart ${className}`}>
       <div className="h-80 w-full">
-        <ResponsiveContainer width="100%" height="100%">
-          {type === 'bar' ? (
-            <BarChart data={chartData} layout="horizontal">
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-              <XAxis
-                type="number"
-                stroke="#9CA3AF"
-                fontSize={12}
-                tickFormatter={(value) => `${(value / 1000).toFixed(0)}K`}
-              />
-              <YAxis
-                type="category"
-                dataKey="language"
-                stroke="#9CA3AF"
-                fontSize={12}
-                width={80}
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <Bar
-                dataKey="size"
-                radius={[0, 4, 4, 0]}
-                fill="#10B981"
-              >
-                {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Bar>
-            </BarChart>
-          ) : (
-            <PieChart>
-              <Pie
-                data={chartData}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                outerRadius={100}
-                fill="#8884d8"
-                dataKey="size"
-              >
-                {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip content={<CustomTooltip />} />
-            </PieChart>
-          )}
-        </ResponsiveContainer>
+        {type === 'bar' ? (
+          <Bar data={barConfig.data} options={barConfig.options} />
+        ) : (
+          <Pie data={chartConfig.data} options={chartConfig.options} />
+        )}
       </div>
 
-      {/* Legend */}
-      <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-2">
-        {chartData.slice(0, 6).map((lang) => (
-          <div key={lang.language} className="flex items-center gap-2">
+      {/* Enhanced Legend */}
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-3">
+        {chartData.map((lang) => (
+          <div key={lang.language} className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-gray-800/50 to-gray-700/50 border border-gray-600 hover:border-gray-500 transition-all duration-200 hover:shadow-lg">
             <div
-              className="w-3 h-3 rounded-sm"
+              className="w-4 h-4 rounded-full shadow-sm"
               style={{ backgroundColor: lang.color }}
             />
-            <span className="text-sm text-gray-300 truncate">
-              {lang.language} ({lang.percentage}%)
-            </span>
+            <div className="flex-1 min-w-0">
+              <span className="text-sm font-medium text-white truncate block">
+                {lang.language}
+              </span>
+              <span className="text-xs text-gray-400">
+                {lang.percentage}% • {lang.size.toLocaleString()} bytes
+              </span>
+            </div>
           </div>
         ))}
       </div>

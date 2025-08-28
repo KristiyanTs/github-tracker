@@ -331,7 +331,7 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
               />
             </div>
             <div id="languages-chart">
-              <LanguageChart data={data.languages} type="bar" />
+              <LanguageChart data={data.languages} type="pie" />
             </div>
           </div>
         )}
