@@ -259,78 +259,63 @@ export default function GitHubAnalytics({ username }: GitHubAnalyticsProps) {
           </div>
           <ExportDropdown data={data} />
         </div>
-      </div>
 
-      {/* Achievements Section */}
-      {data.achievements && (
-        <div className="bg-gradient-to-r from-gray-800 to-gray-900 border border-gray-700 rounded-lg p-6">
-          <div className="mb-6">
-            <h3 className="text-xl font-bold text-white mb-2">Profile Achievements</h3>
-            <p className="text-gray-400 text-sm">Unlocked {data.achievements.achievements.length} achievements • Profile {data.achievements.profileCompletion}% complete</p>
-          </div>
-          
-          {/* Achievement Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {data.achievements.achievements.map((achievement) => (
-              <div
-                key={achievement.id}
-                className="bg-gray-700/50 border border-gray-600 rounded-lg p-4 hover:bg-gray-700 transition-colors"
-              >
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-gray-600/50 rounded-lg flex items-center justify-center">
-                    {achievement.category === 'profile' && (
-                      <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
-                    )}
-                    {achievement.category === 'contribution' && (
-                      <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                      </svg>
-                    )}
-                    {achievement.category === 'repository' && (
-                      <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                    )}
-                    {achievement.category === 'social' && (
-                      <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
-                    )}
-                    {achievement.category === 'milestone' && (
-                      <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-semibold text-white text-sm mb-1">{achievement.name}</h4>
-                    <p className="text-gray-400 text-xs">{achievement.description}</p>
+        {/* Profile Achievements */}
+        {data.achievements && (
+          <div className="mt-8 pt-6 border-t border-gray-700">
+            <div className="mb-6">
+              <h3 className="text-xl font-bold text-white mb-2">Profile Achievements</h3>
+              <p className="text-gray-400 text-sm">Unlocked {data.achievements.achievements.length} achievements • Profile {data.achievements.profileCompletion}% complete</p>
+            </div>
+            
+            {/* Achievement Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {data.achievements.achievements.map((achievement) => (
+                <div
+                  key={achievement.id}
+                  className="p-4 hover:bg-gray-700/20 transition-colors rounded-lg"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 bg-gray-600/50 rounded-lg flex items-center justify-center">
+                      {achievement.category === 'profile' && (
+                        <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                      )}
+                      {achievement.category === 'contribution' && (
+                        <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        </svg>
+                      )}
+                      {achievement.category === 'repository' && (
+                        <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      )}
+                      {achievement.category === 'social' && (
+                        <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                      )}
+                      {achievement.category === 'milestone' && (
+                        <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-white text-sm mb-1">{achievement.name}</h4>
+                      <p className="text-gray-400 text-xs">{achievement.description}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-          
-          {/* Special Badges */}
-          {data.achievements.specialBadges.length > 0 && (
-            <div className="mt-6 pt-4 border-t border-gray-700">
-              <h4 className="text-lg font-semibold text-white mb-3">Special Badges</h4>
-              <div className="flex flex-wrap gap-2">
-                {data.achievements.specialBadges.map((badge, index) => (
-                  <span
-                    key={index}
-                    className="inline-flex items-center px-3 py-1 rounded-lg text-sm bg-gray-700/50 text-gray-300 border border-gray-600"
-                  >
-                    {badge.replace(/[^\w\s]/g, '')}
-                  </span>
-                ))}
-              </div>
+              ))}
             </div>
-          )}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
+
+
 
       {/* Chart Navigation */}
       <div className="flex flex-wrap items-center justify-between gap-4">
