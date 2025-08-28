@@ -25,7 +25,7 @@ const MONTHS = [
   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
 ];
 
-const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 export default function ContributionHeatmap({ 
   data, 
@@ -63,7 +63,8 @@ export default function ContributionHeatmap({
         const date = new Date(firstDay.date);
         const month = date.getMonth();
         
-        if (month !== currentMonth && weekIndex % 4 === 0) {
+        // Only add month label if it's a new month and we're in the target year
+        if (month !== currentMonth && date.getFullYear() === currentYear) {
           currentMonth = month;
           labels.push({
             month: MONTHS[month],
@@ -162,7 +163,7 @@ export default function ContributionHeatmap({
             <div
               key={`${month}-${weekIndex}`}
               className="text-xs text-gray-400 absolute"
-              style={{ left: `${weekIndex * 12}px` }}
+              style={{ left: `${(weekIndex * 14) + 32}px` }}
             >
               {month}
             </div>
@@ -178,13 +179,13 @@ export default function ContributionHeatmap({
                 className="h-3 flex items-center text-xs text-gray-400"
                 style={{ marginBottom: '2px' }}
               >
-                {index % 2 === 1 ? day : ''}
+                {index % 2 === 0 ? day : ''}
               </div>
             ))}
           </div>
 
           {/* Heatmap Grid */}
-          <div className="flex gap-1">
+          <div className="flex gap-1 mt-4">
             {weeks.map((week, weekIndex) => (
               <div key={weekIndex} className="flex flex-col gap-1">
                 {week.contributionDays.map((day, dayIndex) => (

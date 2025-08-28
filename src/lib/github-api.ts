@@ -104,43 +104,48 @@ export async function fetchContributions(username: string, year?: number): Promi
 function generateMockContributions(year?: number) {
   const weeks = [];
   const targetYear = year || new Date().getFullYear();
-  const startDate = new Date(targetYear, 0, 1); // January 1st of the target year
   
-  // Generate 53 weeks of data for the entire year
-  for (let week = 0; week < 53; week++) {
+  // Find the first Sunday of the year (or start of the first week)
+  const firstDayOfYear = new Date(targetYear, 0, 1);
+  const firstSunday = new Date(firstDayOfYear);
+  const dayOfWeek = firstDayOfYear.getDay();
+  firstSunday.setDate(firstDayOfYear.getDate() - dayOfWeek);
+  
+  // Generate weeks starting from the first Sunday
+  let currentDate = new Date(firstSunday);
+  let weekCount = 0;
+  
+  while (weekCount < 53 && (currentDate.getFullYear() === targetYear || weekCount < 52)) {
     const contributionDays = [];
+    
     for (let day = 0; day < 7; day++) {
-      const date = new Date(startDate);
-      date.setDate(date.getDate() + (week * 7) + day);
+      const date = new Date(currentDate);
+      date.setDate(currentDate.getDate() + day);
       
-      // Only include days that are within the target year
-      if (date.getFullYear() === targetYear) {
-        // Generate random contribution count with realistic patterns
-        const isWeekend = day === 0 || day === 6;
-        const baseChance = isWeekend ? 0.3 : 0.7;
-        const hasContribution = Math.random() < baseChance;
-        const count = hasContribution ? Math.floor(Math.random() * 15) + 1 : 0;
-        
-        let level: 0 | 1 | 2 | 3 | 4 = 0;
-        if (count > 0) {
-          if (count <= 3) level = 1;
-          else if (count <= 6) level = 2;
-          else if (count <= 10) level = 3;
-          else level = 4;
-        }
-
-        contributionDays.push({
-          date: date.toISOString().split('T')[0],
-          count,
-          level
-        });
+      // Generate random contribution count with realistic patterns
+      const isWeekend = day === 0 || day === 6;
+      const baseChance = isWeekend ? 0.3 : 0.7;
+      const hasContribution = Math.random() < baseChance;
+      const count = hasContribution ? Math.floor(Math.random() * 15) + 1 : 0;
+      
+      let level: 0 | 1 | 2 | 3 | 4 = 0;
+      if (count > 0) {
+        if (count <= 3) level = 1;
+        else if (count <= 6) level = 2;
+        else if (count <= 10) level = 3;
+        else level = 4;
       }
+
+      contributionDays.push({
+        date: date.toISOString().split('T')[0],
+        count,
+        level
+      });
     }
     
-    // Only add weeks that have contribution days
-    if (contributionDays.length > 0) {
-      weeks.push({ contributionDays });
-    }
+    weeks.push({ contributionDays });
+    currentDate.setDate(currentDate.getDate() + 7);
+    weekCount++;
   }
   
   return weeks;
