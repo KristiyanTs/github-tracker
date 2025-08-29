@@ -40,12 +40,36 @@ Ready to deploy this beast? Click the button and show the world your code hustle
 - **PNG/SVG Images**: High-resolution charts perfect for CVs and portfolios
 - **Multiple Sizes**: Optimized dimensions for different CV layouts
 
-### Charts & Analytics
-- **Contribution Heatmap**: GitHub-style grid showing daily activity
-- **Commit Timeline**: Line charts showing activity over time
-- **Streak Analysis**: Visualize your longest coding streaks
-- **Language Stats**: Breakdown of your most-used programming languages
-- **Weekly Patterns**: Discover your most productive days
+### Enhanced Profile Analytics
+- **Comprehensive Activity Dashboard**: View all analytics in one place or focus on specific charts
+- **Interactive Chart Navigation**: Switch between different visualization types with smooth transitions
+- **Year Selection**: Analyze activity across different years with easy year switching
+- **Real-Time Data Updates**: Always see the most current contribution data
+- **Responsive Chart Layouts**: Optimized viewing experience on all devices
+
+### Advanced Visualizations
+- **Contribution Heatmap**: GitHub-style grid showing daily activity with hover details
+- **Commit Timeline**: Line charts showing activity patterns over time
+- **Weekly Activity Pattern**: Horizontal bar chart showing productivity by day of the week
+- **Activity Statistics**: Comprehensive metrics including consistency scores and goal tracking
+- **Language Distribution**: Pie charts and breakdowns of programming language usage
+- **Repository Insights**: Minimal, clean repository pills with star counts and activity metrics
+
+### Smart Analytics Features
+- **Consistency Scoring**: AI-powered analysis of your coding habits
+- **Activity Level Assessment**: Automatic categorization of your contribution intensity
+- **Streak Efficiency**: Compare current vs. longest streaks for motivation
+- **Goal Tracking**: Milestone achievements and progress indicators
+- **Pattern Recognition**: Weekday vs. weekend activity analysis
+- **Performance Insights**: Weekly and monthly averages with context
+
+### User Experience
+- **Dark Mode First**: Modern, rebellious aesthetic that's easy on the eyes
+- **Minimal Design**: Clean, focused interface without visual clutter
+- **Smooth Animations**: Framer Motion-powered transitions and interactions
+- **Accessibility**: Proper ARIA labels and keyboard navigation support
+- **Loading States**: Skeleton loaders and progress indicators
+- **Error Handling**: Graceful fallbacks when data is unavailable
 
 ## 🛠 Tech Stack
 
@@ -100,10 +124,13 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 1. **Enter Username**: Type any GitHub username in the input field
 2. **Fetch Data**: Click "Analyze Activity" to pull contribution data
-3. **Explore Charts**: View different visualization types
-4. **Export**: Download as JSON
-5. **Customize**: Adjust date ranges and chart types
-6. **Use in CV**: Add exported data to your resume
+3. **Explore Analytics**: Navigate between different chart types or view all at once
+4. **Year Selection**: Switch between different years to analyze historical patterns
+5. **Interactive Charts**: Hover over data points for detailed information
+6. **Smart Insights**: Discover consistency scores, activity levels, and performance patterns
+7. **Repository Analysis**: View minimal repository pills with star counts and activity metrics
+8. **Export Options**: Download as JSON, PNG, or SVG for CVs and portfolios
+9. **Customize View**: Focus on specific analytics or get the full dashboard experience
 
 ## 🔧 API Endpoints
 
@@ -119,12 +146,19 @@ GET /api/github/[username]/languages
 
 ## 🎯 Roadmap
 
+- [x] **Enhanced Analytics Dashboard**: Comprehensive activity overview with interactive navigation
+- [x] **Advanced Chart Types**: Horizontal weekly patterns, improved statistics, and minimal repository design
+- [x] **Smart Insights**: Consistency scoring, activity level assessment, and pattern recognition
+- [x] **Improved UX**: Dark mode optimization, smooth animations, and responsive layouts
 - [ ] **Advanced Analytics**: Repository stars, PRs, issues breakdown
 - [ ] **Team Analytics**: Compare multiple developers
 - [ ] **Custom Themes**: Additional color schemes and styles
 - [ ] **Integration APIs**: Direct export to portfolio sites
 - [ ] **Mobile App**: React Native version for on-the-go tracking
 - [ ] **PDF Reports**: Comprehensive activity reports
+- [ ] **Notification System**: Streak reminders and milestone alerts
+- [ ] **Social Features**: Share achievements and compare with friends
+- [ ] **API Rate Limit Management**: Smart caching and request optimization
 
 ## 🤝 Contributing
 
