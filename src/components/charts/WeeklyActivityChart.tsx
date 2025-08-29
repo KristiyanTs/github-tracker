@@ -74,7 +74,7 @@ export default function WeeklyActivityChart({ data, className = '' }: WeeklyActi
         hoverBackgroundColor: hoverColors,
         borderWidth: 0,
         borderRadius: 4,
-        barThickness: 'flex',
+        barThickness: 'flex' as const,
         maxBarThickness: 20,
       }]
     },
