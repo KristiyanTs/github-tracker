@@ -233,13 +233,19 @@ export default function GitHubAnalytics({ username, onDataLoaded }: GitHubAnalyt
       {/* User Info Header */}
       <div className="bg-gradient-to-r from-gray-800 to-gray-900 border border-gray-700 rounded-lg p-6">
         <div className="flex items-center gap-6">
-          <Image
-            src={data.user.avatar_url}
-            alt={`${data.user.login}'s avatar`}
-            width={80}
-            height={80}
-            className="w-32 h-32 rounded-full border-4 border-green-400"
-          />
+          <div className="relative">
+            <div className="w-32 h-32 rounded-full p-1 bg-gradient-to-br from-green-400 via-emerald-500 to-transparent">
+              <div className="w-full h-full rounded-full bg-gray-900 p-0.5">
+                <Image
+                  src={data.user.avatar_url}
+                  alt={`${data.user.login}'s avatar`}
+                  width={80}
+                  height={80}
+                  className="w-full h-full rounded-full object-cover"
+                />
+              </div>
+            </div>
+          </div>
           <div className="flex-1">
             <h2 className="text-2xl font-bold text-white">
               {data.user.name || data.user.login}

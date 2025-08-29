@@ -37,10 +37,12 @@ export default function UserPage({ params }: UserPageProps) {
         <div className="max-w-4xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-              <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-emerald-500 rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                </svg>
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden">
+                <img 
+                  src="/logo.png" 
+                  alt="GitHub Activity Logo" 
+                  className="w-full h-full object-contain"
+                />
               </div>
               <h1 className="text-xl font-semibold text-white">GitHub Activity</h1>
             </Link>
@@ -99,6 +101,16 @@ export default function UserPage({ params }: UserPageProps) {
       {/* Footer */}
       <footer className="border-t border-gray-800/50 py-8 mt-20">
         <div className="max-w-4xl mx-auto px-6 text-center">
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden">
+              <img 
+                src="/logo.png" 
+                alt="GitHub Activity Logo" 
+                className="w-full h-full object-contain"
+              />
+            </div>
+            <span className="text-lg font-semibold text-white">GitHub Activity</span>
+          </div>
           <p className="text-gray-500 text-sm mb-4">
             Built with Next.js • Open Source • Real GitHub API
           </p>
