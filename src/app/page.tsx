@@ -2,12 +2,16 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/auth-context';
+import Link from 'next/link';
+import SavedProfiles from '@/components/SavedProfiles';
 
 export default function Home() {
   const [username, setUsername] = useState('');
   const [isClient, setIsClient] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const router = useRouter();
+  const { user, signOut, loading } = useAuth();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +41,7 @@ export default function Home() {
       {/* Minimal Header */}
       <header className="relative z-10 border-b border-white/10 bg-black/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-6 py-6">
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 group cursor-pointer">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/25 transition-all duration-300 group-hover:scale-110 group-hover:shadow-green-500/40 overflow-hidden">
                 <img 
@@ -47,6 +51,41 @@ export default function Home() {
                 />
               </div>
               <h1 className="text-2xl font-bold text-white tracking-tight">GitHub Activity</h1>
+            </div>
+            
+            {/* Auth Section */}
+            <div className="flex items-center gap-4">
+              {!loading && (
+                user ? (
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                      {user.user_metadata?.avatar_url && (
+                        <img 
+                          src={user.user_metadata.avatar_url} 
+                          alt="Profile" 
+                          className="w-8 h-8 rounded-full border border-white/20"
+                        />
+                      )}
+                      <span className="text-white text-sm font-medium">
+                        {user.user_metadata?.name || user.email}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => signOut()}
+                      className="text-gray-400 hover:text-white transition-colors text-sm font-medium px-3 py-1 rounded-lg hover:bg-white/5"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                ) : (
+                  <Link 
+                    href="/login"
+                    className="bg-gradient-to-r from-green-500 to-emerald-600 text-black px-4 py-2 rounded-lg font-semibold transition-all hover:shadow-lg hover:shadow-green-500/25 hover:scale-105 active:scale-95 text-sm"
+                  >
+                    Sign In
+                  </Link>
+                )
+              )}
             </div>
           </div>
         </div>
@@ -106,6 +145,9 @@ export default function Home() {
                 </div>
               </form>
             </div>
+
+            {/* Saved Profiles Section */}
+            <SavedProfiles className={`mb-32 transition-all duration-1000 delay-1200 ${isTyping ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`} />
 
             {/* Features - Minimal Grid with Hover Effects */}
             <div className={`grid md:grid-cols-3 gap-12 mb-32 transition-all duration-1000 delay-1500 ${isTyping ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>

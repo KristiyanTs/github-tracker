@@ -5,6 +5,7 @@ import Link from 'next/link';
 import GitHubAnalytics from '@/components/GitHubAnalytics';
 import ClientOnly from '@/components/ClientOnly';
 import ExportDropdown from '@/components/ExportDropdown';
+import { useAuth } from '@/lib/auth-context';
 import { GitHubAnalytics as GitHubAnalyticsType } from '@/types/github';
 
 interface UserPageProps {
@@ -15,12 +16,59 @@ export default function UserPage({ params }: UserPageProps) {
   const [username, setUsername] = React.useState<string>('');
   const [analyticsData, setAnalyticsData] = useState<GitHubAnalyticsType | null>(null);
   const [showShareSuccess, setShowShareSuccess] = useState(false);
+  const [showSaveSuccess, setShowSaveSuccess] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const { user } = useAuth();
 
   React.useEffect(() => {
     params.then(({ username }) => {
       setUsername(username);
     });
   }, [params]);
+
+  const saveProfile = async () => {
+    if (!user || !analyticsData || !username) return;
+    
+    setIsSaving(true);
+    try {
+      const profileData = {
+        github_username: username,
+        display_name: analyticsData.user?.name || null,
+        avatar_url: analyticsData.user?.avatar_url || null,
+        bio: analyticsData.user?.bio || null,
+        public_repos: analyticsData.user?.public_repos || null,
+        followers: analyticsData.user?.followers || null,
+        following: analyticsData.user?.following || null,
+        location: analyticsData.user?.location || null,
+        company: analyticsData.user?.company || null,
+        blog: analyticsData.user?.blog || null,
+        twitter_username: null, // Not available in current API
+        total_contributions: analyticsData.contributions?.totalContributions || null,
+        current_streak: analyticsData.stats?.currentStreak || null,
+        longest_streak: analyticsData.stats?.longestStreak || null,
+        is_public: true,
+      };
+
+      const response = await fetch('/api/profiles', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(profileData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save profile');
+      }
+
+      setShowSaveSuccess(true);
+      setTimeout(() => setShowSaveSuccess(false), 2000);
+    } catch (error) {
+      console.error('Error saving profile:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   if (!username) {
     return (
@@ -50,6 +98,21 @@ export default function UserPage({ params }: UserPageProps) {
               {/* Action Buttons - Only show when data is available */}
               {analyticsData && (
                 <>
+                  {/* Save Profile Button - Only show for authenticated users */}
+                  {user && (
+                    <button
+                      onClick={saveProfile}
+                      disabled={isSaving}
+                      className="inline-flex items-center gap-2 px-3 py-1.5 text-gray-400 hover:text-white transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                      title="Save profile to your collection"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                      </svg>
+                      {isSaving ? 'Saving...' : showSaveSuccess ? 'Saved!' : 'Save'}
+                    </button>
+                  )}
+
                   {/* Share Button */}
                   <button
                     onClick={() => {
