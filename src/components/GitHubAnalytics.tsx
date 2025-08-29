@@ -158,7 +158,7 @@ export default function GitHubAnalytics({ username, onDataLoaded }: GitHubAnalyt
     if (username && data) {
       fetchContributionsOnly(selectedYear);
     }
-  }, [selectedYear, fetchContributionsOnly, username, data]);
+  }, [selectedYear, fetchContributionsOnly, username]);
 
   if (loading) {
     return (
