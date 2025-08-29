@@ -20,7 +20,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const supabase = createBrowserSupabaseClient();
+  const [supabase, setSupabase] = useState<ReturnType<typeof createBrowserSupabaseClient> | null>(null);
 
   // Function to ensure user profile exists
   const ensureProfile = async () => {
@@ -34,6 +34,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
+    // Initialize Supabase client only on the client side
+    if (typeof window !== 'undefined') {
+      const client = createBrowserSupabaseClient();
+      setSupabase(client);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!supabase) return;
+
     // Get initial session
     const getInitialSession = async () => {
       const { data: { session }, error } = await supabase.auth.getSession();
@@ -65,7 +75,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     );
 
     return () => subscription.unsubscribe();
-  }, [supabase.auth]);
+  }, [supabase]);
 
   // Ensure profile exists when user changes
   useEffect(() => {
@@ -75,6 +85,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [user]);
 
   const signIn = async (provider: 'github' | 'google') => {
+    if (!supabase) {
+      throw new Error('Supabase client not initialized');
+    }
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
@@ -88,6 +101,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = async () => {
+    if (!supabase) {
+      throw new Error('Supabase client not initialized');
+    }
     const { error } = await supabase.auth.signOut();
     if (error) {
       console.error('Error signing out:', error);
