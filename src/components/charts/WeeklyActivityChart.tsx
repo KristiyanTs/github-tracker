@@ -66,7 +66,7 @@ export default function WeeklyActivityChart({ data, className = '' }: WeeklyActi
 
   const chartConfig = {
     data: {
-      labels: sortedChartData.map(item => item.abbreviation),
+      labels: sortedChartData.map(item => item.day),
       datasets: [{
         label: 'Average Commits',
         data: sortedChartData.map(item => parseFloat(item.average.toFixed(2))),
@@ -75,10 +75,11 @@ export default function WeeklyActivityChart({ data, className = '' }: WeeklyActi
         borderWidth: 0,
         borderRadius: 4,
         barThickness: 'flex',
-        maxBarThickness: 25,
+        maxBarThickness: 20,
       }]
     },
     options: {
+      indexAxis: 'y' as const,
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
@@ -115,7 +116,7 @@ export default function WeeklyActivityChart({ data, className = '' }: WeeklyActi
             },
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             label: function(tooltipItem: any) {
-              const value = tooltipItem.parsed.y;
+              const value = tooltipItem.parsed.x;
               return `${value.toFixed(2)} avg commits per day`;
             }
           }
@@ -123,17 +124,6 @@ export default function WeeklyActivityChart({ data, className = '' }: WeeklyActi
       },
       scales: {
         x: {
-          grid: {
-            display: false,
-          },
-          ticks: {
-            color: '#6b7280',
-            font: {
-              size: 11
-            }
-          }
-        },
-        y: {
           beginAtZero: true,
           grid: {
             color: 'rgba(55, 65, 81, 0.2)',
@@ -147,6 +137,17 @@ export default function WeeklyActivityChart({ data, className = '' }: WeeklyActi
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             callback: function(value: any) {
               return value.toFixed(1);
+            }
+          }
+        },
+        y: {
+          grid: {
+            display: false,
+          },
+          ticks: {
+            color: '#6b7280',
+            font: {
+              size: 11
             }
           }
         }

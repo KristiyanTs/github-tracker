@@ -64,7 +64,7 @@ export default function Home() {
               <div className="mb-8">
                 <h2 className="text-6xl md:text-8xl font-black text-white mb-6 tracking-tight leading-none">
                   <span className={`inline-block transition-all duration-1000 ${isTyping ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-                    Transform
+                    Visualize
                   </span>
                   <br />
                   <span className={`inline-block transition-all duration-1000 delay-300 ${isTyping ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>

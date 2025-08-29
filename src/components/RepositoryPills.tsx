@@ -93,7 +93,7 @@ export default function RepositoryPills({ repositories, maxDisplay = 9 }: Reposi
         {sortedRepos.map((repo) => (
           <div
             key={repo.id}
-            className="group relative bg-gray-800/50 hover:bg-gray-700/50 border border-gray-700 hover:border-gray-600 transition-all duration-200 rounded-lg p-2.5 w-full h-16 flex flex-col justify-between"
+            className="group relative hover:bg-gray-800/20 transition-all duration-200 rounded-lg p-2.5 w-full h-16 flex flex-col justify-between"
             style={{ borderRadius: '4px' }}
           >
             {/* Repository Header */}
