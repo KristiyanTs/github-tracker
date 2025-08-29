@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 // Server client for server-side operations
 export async function createServerSupabaseClient() {
@@ -53,4 +54,18 @@ export function createMiddlewareSupabaseClient(request: NextRequest) {
   });
 
   return { supabase, supabaseResponse };
+}
+
+// Service role client for admin operations (bypasses RLS)
+export function createServiceRoleSupabaseClient() {
+  if (!supabaseServiceRoleKey) {
+    throw new Error('Service role key not configured');
+  }
+
+  return createServerClient(supabaseUrl, supabaseServiceRoleKey, {
+    cookies: {
+      getAll: () => [],
+      setAll: () => {},
+    },
+  });
 }

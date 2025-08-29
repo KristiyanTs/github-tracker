@@ -6,7 +6,7 @@ export interface Database {
           id: string;
           created_at: string;
           updated_at: string;
-          user_id: string;
+          user_id: string | null;
           github_username: string;
           display_name: string | null;
           avatar_url: string | null;
@@ -27,7 +27,7 @@ export interface Database {
           id?: string;
           created_at?: string;
           updated_at?: string;
-          user_id: string;
+          user_id?: string | null;
           github_username: string;
           display_name?: string | null;
           avatar_url?: string | null;
@@ -48,7 +48,7 @@ export interface Database {
           id?: string;
           created_at?: string;
           updated_at?: string;
-          user_id?: string;
+          user_id?: string | null;
           github_username?: string;
           display_name?: string | null;
           avatar_url?: string | null;

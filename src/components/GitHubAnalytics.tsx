@@ -48,6 +48,35 @@ export default function GitHubAnalytics({ username, onDataLoaded }: GitHubAnalyt
       const analytics = await response.json();
       setData(analytics);
       
+      // Automatically save the profile when data is successfully fetched
+      try {
+        await fetch('/api/profiles/auto-save', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            github_username: username.trim(),
+            display_name: analytics.user?.name || null,
+            avatar_url: analytics.user?.avatar_url || null,
+            bio: analytics.user?.bio || null,
+            public_repos: analytics.user?.public_repos || null,
+            followers: analytics.user?.followers || null,
+            following: analytics.user?.following || null,
+            location: analytics.user?.location || null,
+            company: analytics.user?.company || null,
+            blog: analytics.user?.blog || null,
+            twitter_username: null,
+            total_contributions: analytics.contributions?.totalContributions || null,
+            current_streak: analytics.stats?.currentStreak || null,
+            longest_streak: analytics.stats?.longestStreak || null,
+          }),
+        });
+      } catch (autoSaveError) {
+        // Don't fail the whole operation if auto-save fails
+        console.warn('Failed to auto-save profile:', autoSaveError);
+      }
+      
       // Notify parent component that data is loaded
       if (onDataLoaded) {
         onDataLoaded(analytics);
