@@ -79,6 +79,30 @@ export interface GitHubProfileAchievements {
   specialBadges: string[];
 }
 
+export interface GitHubEventPayload {
+  commits?: Array<{
+    message: string;
+    sha: string;
+    url: string;
+  }>;
+  ref_type?: string;
+  ref?: string;
+  action?: string;
+  issue?: {
+    title: string;
+    number: number;
+  };
+  pull_request?: {
+    title: string;
+    number: number;
+  };
+  release?: {
+    name?: string;
+    tag_name?: string;
+  };
+  [key: string]: unknown;
+}
+
 export interface GitHubEvent {
   id: string;
   type: string;
@@ -95,7 +119,7 @@ export interface GitHubEvent {
     name: string;
     url: string;
   };
-  payload: any;
+  payload: GitHubEventPayload;
   public: boolean;
   created_at: string;
 }

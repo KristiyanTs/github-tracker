@@ -22,7 +22,12 @@ export interface Profile {
   updated_at: string;
 }
 
-export async function ensureUserProfile(userId: string, userMetadata?: any): Promise<Profile | null> {
+export async function ensureUserProfile(userId: string, userMetadata?: {
+  full_name?: string;
+  name?: string;
+  email?: string;
+  avatar_url?: string;
+}): Promise<Profile | null> {
   const supabase = createBrowserSupabaseClient();
   
   try {
