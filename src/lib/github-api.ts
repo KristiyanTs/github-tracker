@@ -1,4 +1,4 @@
-import { GitHubUser, Repository, LanguageStats, ContributionData, ActivityStats, GitHubAnalytics, ContributionWeek, GitHubProfileAchievements, GitHubAchievement } from '@/types/github';
+import { GitHubUser, Repository, LanguageStats, ContributionData, ActivityStats, GitHubAnalytics, ContributionWeek, GitHubProfileAchievements, GitHubAchievement, GitHubEvent, RecentActivity } from '@/types/github';
 
 const GITHUB_API_BASE = 'https://api.github.com';
 
@@ -832,6 +832,36 @@ function calculateProfileAchievements(user: GitHubUser, stats: ActivityStats, re
     achievements,
     badges: achievements.map(a => a.icon + ' ' + a.name),
     specialBadges
+  };
+}
+
+export async function fetchRecentActivity(username: string, page: number = 1, perPage: number = 10): Promise<RecentActivity> {
+  const response = await fetch(
+    `${GITHUB_API_BASE}/users/${username}/events/public?page=${page}&per_page=${perPage}`,
+    {
+      headers: getAuthHeaders(),
+    }
+  );
+
+  if (!response.ok) {
+    if (response.status === 404) {
+      throw new GitHubAPIError(`User '${username}' not found`, 404);
+    }
+    if (response.status === 403) {
+      throw new GitHubAPIError('API rate limit exceeded. Please try again later.', 403);
+    }
+    throw new GitHubAPIError(`Failed to fetch recent activity: ${response.statusText}`, response.status);
+  }
+
+  const events: GitHubEvent[] = await response.json();
+  
+  // Check if there are more pages by looking at Link header
+  const linkHeader = response.headers.get('Link');
+  const hasMore = linkHeader ? linkHeader.includes('rel="next"') : false;
+
+  return {
+    events,
+    hasMore
   };
 }
 

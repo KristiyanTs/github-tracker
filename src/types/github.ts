@@ -79,6 +79,32 @@ export interface GitHubProfileAchievements {
   specialBadges: string[];
 }
 
+export interface GitHubEvent {
+  id: string;
+  type: string;
+  actor: {
+    id: number;
+    login: string;
+    display_login: string;
+    gravatar_id: string;
+    url: string;
+    avatar_url: string;
+  };
+  repo: {
+    id: number;
+    name: string;
+    url: string;
+  };
+  payload: any;
+  public: boolean;
+  created_at: string;
+}
+
+export interface RecentActivity {
+  events: GitHubEvent[];
+  hasMore: boolean;
+}
+
 export interface GitHubAnalytics {
   user: GitHubUser;
   contributions: ContributionData;

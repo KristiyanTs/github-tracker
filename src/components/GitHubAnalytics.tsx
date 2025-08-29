@@ -9,6 +9,7 @@ import LanguageChart from './charts/LanguageChart';
 import StatsCard from './charts/StatsCard';
 import WeeklyActivityChart from './charts/WeeklyActivityChart';
 import RepositoryPills from './RepositoryPills';
+import RecentActivity from './RecentActivity';
 import { calculateActivityStats } from '@/lib/github-api';
 
 interface GitHubAnalyticsProps {
@@ -460,6 +461,10 @@ export default function GitHubAnalytics({ username, onDataLoaded }: GitHubAnalyt
         )}
       </div>
 
+      {/* Recent Activity Section */}
+      <div className="py-4">
+        <RecentActivity username={username} />
+      </div>
 
     </div>
   );
