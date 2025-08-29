@@ -341,10 +341,10 @@ export default function GitHubAnalytics({ username, onDataLoaded }: GitHubAnalyt
             <button
               key={button.id}
               onClick={() => setActiveChart(button.id)}
-              className={`px-3 py-1.5 rounded-md text-sm transition-colors flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 text-sm transition-colors flex items-center gap-1.5 ${
                 activeChart === button.id
-                  ? 'bg-green-600 text-white'
-                  : 'bg-gray-700/50 text-gray-400 hover:bg-gray-600/50 hover:text-gray-300'
+                  ? 'text-green-400 font-medium'
+                  : 'text-gray-400 hover:text-white'
               }`}
             >
               {button.icon} {button.label}
