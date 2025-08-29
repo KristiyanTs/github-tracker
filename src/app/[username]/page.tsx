@@ -57,7 +57,7 @@ export default function UserPage({ params }: UserPageProps) {
                       setShowShareSuccess(true);
                       setTimeout(() => setShowShareSuccess(false), 2000);
                     }}
-                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-white rounded-lg transition-colors text-sm"
+                    className="inline-flex items-center gap-2 px-3 py-1.5 text-gray-400 hover:text-white transition-colors text-sm"
                     title="Copy current URL to clipboard"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -71,7 +71,7 @@ export default function UserPage({ params }: UserPageProps) {
                     href={`https://github.com/${username}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-white rounded-lg transition-colors text-sm"
+                    className="inline-flex items-center gap-2 px-3 py-1.5 text-gray-400 hover:text-white transition-colors text-sm"
                     title="Visit GitHub profile"
                   >
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">

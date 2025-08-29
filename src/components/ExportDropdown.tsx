@@ -183,7 +183,7 @@ export default function ExportDropdown({ data, className = '' }: ExportDropdownP
       <button
         onClick={() => setIsOpen(!isOpen)}
         disabled={exporting !== null}
-        className={`inline-flex items-center gap-2 px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-white rounded-lg transition-colors text-sm ${
+        className={`inline-flex items-center gap-2 px-3 py-1.5 text-gray-400 hover:text-white transition-colors text-sm ${
           exporting ? 'opacity-50 cursor-not-allowed' : ''
         }`}
         title="Export data"
