@@ -7,6 +7,7 @@ import ContributionHeatmap from './charts/ContributionHeatmap';
 import ContributionLineChart from './charts/ContributionLineChart';
 import LanguageChart from './charts/LanguageChart';
 import StatsCard from './charts/StatsCard';
+import RepositoryPills from './RepositoryPills';
 import { calculateActivityStats } from '@/lib/github-api';
 
 interface GitHubAnalyticsProps {
@@ -332,7 +333,12 @@ export default function GitHubAnalytics({ username, onDataLoaded }: GitHubAnalyt
         )}
       </div>
 
-
+      {/* Public Repositories */}
+      <div className="mb-6">
+        <h3 className="text-xl font-bold text-white mb-2">Public Repositories</h3>
+        <p className="text-gray-400 text-sm">Showcasing the most starred and recently updated projects</p>
+      </div>
+      <RepositoryPills repositories={data.repositories} />
 
       {/* Chart Navigation */}
       <div className="flex flex-wrap items-center justify-between gap-4">
