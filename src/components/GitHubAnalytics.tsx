@@ -7,6 +7,7 @@ import ContributionHeatmap from './charts/ContributionHeatmap';
 import ContributionLineChart from './charts/ContributionLineChart';
 import LanguageChart from './charts/LanguageChart';
 import StatsCard from './charts/StatsCard';
+import WeeklyActivityChart from './charts/WeeklyActivityChart';
 import RepositoryPills from './RepositoryPills';
 import { calculateActivityStats } from '@/lib/github-api';
 
@@ -15,7 +16,7 @@ interface GitHubAnalyticsProps {
   onDataLoaded?: (data: GitHubAnalyticsType) => void;
 }
 
-type ChartType = 'heatmap' | 'line' | 'languages' | 'stats' | 'all';
+type ChartType = 'heatmap' | 'line' | 'languages' | 'stats' | 'weekly' | 'all';
 
 export default function GitHubAnalytics({ username, onDataLoaded }: GitHubAnalyticsProps) {
   const [data, setData] = useState<GitHubAnalyticsType | null>(null);
@@ -143,6 +144,11 @@ export default function GitHubAnalytics({ username, onDataLoaded }: GitHubAnalyt
     { id: 'stats' as ChartType, label: 'Stats', icon: (
       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+      </svg>
+    ) },
+    { id: 'weekly' as ChartType, label: 'Weekly', icon: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
       </svg>
     ) },
   ];
@@ -359,7 +365,7 @@ export default function GitHubAnalytics({ username, onDataLoaded }: GitHubAnalyt
         </div>
         
         {/* Year Selector - only show for year-affected charts */}
-        {(activeChart === 'all' || activeChart === 'heatmap' || activeChart === 'line' || activeChart === 'stats') && (
+        {(activeChart === 'all' || activeChart === 'heatmap' || activeChart === 'line' || activeChart === 'stats' || activeChart === 'weekly') && (
           <div className="flex items-center gap-2">
             <label htmlFor="year-selector" className="text-sm text-gray-400">Year:</label>
             <select
@@ -381,7 +387,7 @@ export default function GitHubAnalytics({ username, onDataLoaded }: GitHubAnalyt
       {/* Chart Content */}
       <div className="space-y-8">
         {/* Year-Affected Components Wrapper */}
-        {(activeChart === 'all' || activeChart === 'heatmap' || activeChart === 'stats' || activeChart === 'line') && (
+        {(activeChart === 'all' || activeChart === 'heatmap' || activeChart === 'stats' || activeChart === 'line' || activeChart === 'weekly') && (
           <div className="space-y-12">
             {/* Contribution Heatmap */}
             {(activeChart === 'all' || activeChart === 'heatmap') && (
@@ -421,6 +427,19 @@ export default function GitHubAnalytics({ username, onDataLoaded }: GitHubAnalyt
                 </div>
                 <div id="timeline-chart">
                   <ContributionLineChart data={data.contributions} />
+                </div>
+              </div>
+            )}
+
+            {/* Weekly Activity Chart */}
+            {(activeChart === 'all' || activeChart === 'weekly') && (
+              <div className="py-4">
+                <div className="mb-6">
+                  <h3 className="text-xl font-bold text-white mb-2">Weekly Activity Pattern</h3>
+                  <p className="text-gray-400 text-sm">Average commits per day of the week</p>
+                </div>
+                <div id="weekly-chart">
+                  <WeeklyActivityChart data={data.contributions} />
                 </div>
               </div>
             )}
